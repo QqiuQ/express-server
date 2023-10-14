@@ -33,10 +33,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        log.debug("JwtAuthenticationFilter -> JwtToken: "+request.getHeader(Const.HEADER));
+//        log.debug("JwtAuthenticationFilter -> JwtToken: " + request.getHeader(Const.HEADER));
 
-        String authorization = request.getHeader(Const.HEADER);
-        DecodedJWT jwt = utils.resolveJwt(authorization);
+        String header = request.getHeader(Const.HEADER);
+        DecodedJWT jwt = utils.resolveJwt(header);
         if (jwt != null) {
             UserDetails user = utils.toUser(jwt);
             UsernamePasswordAuthenticationToken authentication =

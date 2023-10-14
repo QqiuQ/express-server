@@ -15,8 +15,8 @@ import java.util.Optional;
 /**
  * 专用用于处理错误页面的Controller
  */
-@RestController
-@RequestMapping({"${server.error.path:${error.path:/error}}"})
+//@RestController
+//@RequestMapping({"${server.error.path:${error.path:/error}}"})
 public class ErrorPageController extends AbstractErrorController {
 
     public ErrorPageController(ErrorAttributes errorAttributes) {

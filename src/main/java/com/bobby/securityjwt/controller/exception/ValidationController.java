@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * 用于接口参数校验处理的控制器
  */
 @Slf4j
-@RestControllerAdvice
+//@RestControllerAdvice
 public class ValidationController {
 
     /**

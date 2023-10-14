@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @className: UserServiceImpl
  * @author: Bobby
@@ -22,11 +24,6 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
-    @Resource
-    private JwtUtils utils;
-//    @Resource
-//    @Qualifier("authenticationManagerBean")
-//    private AuthenticationManager authenticationManager;
 
     @Override
     public User selectByUsername(String username) {
@@ -37,33 +34,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AjaxResult login(UserDto userDto) {
-        // 进行登录处理
-//
-//        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword());
-//        Authentication authentication = authenticationManager.authenticate(authToken);
-//        if (authentication == null) {
-//            throw new RuntimeException("Login false");
-//        }
-//        org.springframework.security.core.userdetails.User authUser = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-//        com.bobby.securityjwt.entity.User user = userMapper.selectByUsername(authUser.getUsername());
-//        // 利用用户名和ID生成token
-//        String jwt = utils.createJwt(authUser, user.getUsername(), user.getId());
-//        if (jwt == null) {
-//            return AjaxResult.error(AjaxResult.HttpStatus.FORBIDDEN, "登录验证频繁，请稍后再试");
-//        } else {
-//            AjaxResult ajax = AjaxResult.success("登录成功");
-//            ajax.put("username", user.getUsername());
-//            ajax.put("token", jwt);
-//            ajax.put("expire", utils.expireTime());
-//            return ajax;
-//        }
-        return AjaxResult.success("success");
-    }
-
-    @Override
-    public int updateUser(User user) {
-        return userMapper.updateById(user);
+    public List<User> getUserList() {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        return userMapper.selectList(wrapper);
     }
 
 }

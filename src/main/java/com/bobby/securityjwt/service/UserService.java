@@ -4,6 +4,8 @@ import com.bobby.securityjwt.common.AjaxResult;
 import com.bobby.securityjwt.entity.User;
 import com.bobby.securityjwt.entity.dto.UserDto;
 
+import java.util.List;
+
 /**
  * @className: UserService
  * @author: Bobby
@@ -12,7 +14,5 @@ import com.bobby.securityjwt.entity.dto.UserDto;
 public interface UserService {
     User selectByUsername(String username);
 
-    AjaxResult login(UserDto userDto);
-
-    int updateUser(User user);
+    List<User> getUserList();
 }
