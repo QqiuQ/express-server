@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -58,6 +60,18 @@ public class SecurityConfiguration {
     @Resource
     EmployeeDetailService employeeDetailService;
 
+
+    /**
+     * 是否开启 hasPermission 注解的自定义校验
+     * @param employeePermissionEvaluator
+     * @return
+     */
+    @Bean
+    static MethodSecurityExpressionHandler expressionHandler(EmployeePermissionEvaluator employeePermissionEvaluator) {
+        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setPermissionEvaluator(employeePermissionEvaluator);
+        return expressionHandler;
+    }
 
     @Bean
     public SecurityFilterChain employeeFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -111,15 +125,9 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain userFilterChain(HttpSecurity http) throws Exception {
         return http
-//                .securityMatchers(machers ->
-//                        machers.requestMatchers("/**")
-//                )
                 .userDetailsService(myUserDetailService)
                 .authorizeHttpRequests(conf -> conf
-//                                .requestMatchers("/pwd/reset").permitAll()  // 修改密码测试
-//                                .requestMatchers("/login").permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-//                                .anyRequest().hasAnyRole(Const.ROLE_DEFAULT)
                                 .anyRequest().permitAll()
                         // hasAnyRole 会自动在role名称前添加"ROLE_"
                         // 注意自己数据库中的 role
@@ -140,6 +148,7 @@ public class SecurityConfiguration {
                         .accessDeniedHandler(this::handleProcess)
                         .authenticationEntryPoint(this::handleProcess)
                 )
+
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(conf -> conf
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

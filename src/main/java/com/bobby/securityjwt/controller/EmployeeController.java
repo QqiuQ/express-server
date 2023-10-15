@@ -23,7 +23,7 @@ public class EmployeeController {
     EmployeeService employeeService;
 
     @GetMapping()
-    @PreAuthorize("hasPermission()")
+    @PreAuthorize("hasPermission('#user','list')")
     public AjaxResult list() {
         List<Employee> employeeList = employeeService.selectAll();
         return AjaxResult.success(employeeList);
