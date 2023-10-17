@@ -1,8 +1,12 @@
 package com.bobby.securityjwt;
 
+import com.bobby.securityjwt.common.RoleConst;
 import com.bobby.securityjwt.entity.Employee;
+import com.bobby.securityjwt.entity.Role;
 import com.bobby.securityjwt.mapper.EmployeeMapper;
+import com.bobby.securityjwt.mapper.RoleMapper;
 import jakarta.annotation.Resource;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,9 +24,12 @@ public class EmployeeMapperTests {
     EmployeeMapper mapper;
     @Resource
     PasswordEncoder passwordEncoder;
+    @Resource
+    RoleMapper roleMapper;
 
     @Test
-    public void insert() {
+    public void insertSuperAdmin() {
+
         Employee employee = new Employee();
         employee.setCode("sf8848");
         employee.setUsername("bobby");
@@ -31,6 +38,18 @@ public class EmployeeMapperTests {
         employee.setAccountStatus(0);   // normal
         employee.setCreateTime(LocalDateTime.now());
         org.junit.Assert.assertTrue(mapper.insert(employee) > 0);
+    }
+
+    @Test
+    public void insertNormalEmployee() {
+        Employee employee = new Employee();
+        employee.setCode("norm123");
+        employee.setUsername("normaluser");
+        employee.setPassword(passwordEncoder.encode("123456"));
+        employee.setName("普通员工");
+        employee.setAccountStatus(0);
+        employee.setCreateTime(LocalDateTime.now());
+        Assert.assertTrue(mapper.insert(employee) > 0);
     }
 
     @Test

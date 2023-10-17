@@ -11,6 +11,7 @@ import jakarta.annotation.Resource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +38,11 @@ public class UserServiceImpl implements UserService {
     public List<User> getUserList() {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         return userMapper.selectList(wrapper);
+    }
+
+    @Override
+    public boolean deleteById(Long id) {
+        return userMapper.deleteById(id) > 0;
     }
 
 }

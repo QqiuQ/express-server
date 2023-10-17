@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
+<mapper namespace="com.bobby.securityjwt.mapper.RoleMapper">
+
+    <!--    多表链接查询-->
+    <select id="getRoleByRoleName" resultType="com.bobby.securityjwt.entity.Role">
+        select * from role
+        <where>
+            <if test="name != null and role !='' ">
+                name=#{name}
+            </if>
+        </where>
+    </select>
+
+</mapper>

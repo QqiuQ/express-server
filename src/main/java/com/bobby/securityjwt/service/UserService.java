@@ -1,8 +1,6 @@
 package com.bobby.securityjwt.service;
 
-import com.bobby.securityjwt.common.AjaxResult;
 import com.bobby.securityjwt.entity.User;
-import com.bobby.securityjwt.entity.dto.UserDto;
 
 import java.util.List;
 
@@ -15,4 +13,6 @@ public interface UserService {
     User selectByUsername(String username);
 
     List<User> getUserList();
+
+    boolean deleteById(Long id);
 }

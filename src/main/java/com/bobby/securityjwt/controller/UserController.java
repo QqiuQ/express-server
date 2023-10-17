@@ -5,6 +5,7 @@ import com.bobby.securityjwt.entity.User;
 import com.bobby.securityjwt.service.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
-    @PostAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasPermission('user','read')")   // 要求当前用户的角色拥有user,delete的权限
     public AjaxResult info(@PathVariable("username") String username) {
         User user = userService.selectByUsername(username);
         if (Objects.isNull(user)) {
@@ -46,4 +47,13 @@ public class UserController {
         }
         return AjaxResult.success(user);
     }
+
+    @RequestMapping("/delete/{id}")
+    @PreAuthorize("hasPermission('user','delete')") // 要求当前用户的角色拥有user,delete的权限
+    public AjaxResult delete(@PathVariable("id") Long id) {
+        if (userService.deleteById(id))
+            return AjaxResult.success("删除成功");
+        else return AjaxResult.error("删除失败");
+    }
+
 }

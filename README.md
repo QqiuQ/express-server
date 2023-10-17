@@ -123,8 +123,83 @@ Security 过滤原理
 
 ### 角色认证
 
-基于角色的访问认证
+基于角色的访问认证，在方法上定义@PreAuthorize("hasRole('ROLE_USER')")，则该请求要求登录用户有ROLE_USER的角色。
 
 ### 权限验证
 
-基于方法的权限验证
+通过自定义 PermissionEvaluator 进行权限验证。
+
+这里只重写了一个方法
+
+```java
+public class EmployeePermissionEvaluator implements PermissionEvaluator {
+
+    @Resource
+    PermissionMapper permissionMapper;
+
+    /**
+     * eg:  user/list
+     * user/edit/{id}
+     * user/insert
+     * user/delete/{id}
+     * 定义这个权限的目的是，使得授权进一步具体化。举个不太恰当的例子，例如，角色为站点管理员拥有 user/list权限，而没有insert, eidt和delete权限
+     * 而 超级管理员 拥有上述的所有权限。在具体方法上可添加注解 @PreAuthorize("hasPermission(xxx,xxx)")
+     *
+     * @param authentication     会自动传过来当前登录的用户
+     * @param targetDomainObject 目标域，例如上面url中的 user
+     * @param permission         权限：例如上面中的 edit
+     * @return
+     * @PreAuthorize("hasPermission('user','edit')")
+     * @RequestMapping("/user/{id}") public AjaxResult edit(@PathVariable("id") Long id){
+     * ...
+     * }
+     * <p>
+     * 然后在下面的方法内验证，authentication 是否拥有域为user的edit权限
+     * <p>
+     * 因此，稍稍复杂化一些，同时也需要将角色对特定域所拥有的权限也存入数据库
+     * <p>
+     * Quesiton: 如何读取这些权限呢? 因为 authentication 只拥有UserDetails的信息
+     * 1. 根据角色从数据库读取权限? 相应的就要引入 PermissionService
+     * 2.
+     */
+
+    @Override
+    public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
+        // 根据 roleName 获取相应的 Permissionso
+        for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
+            String roleName = grantedAuthority.getAuthority();
+            List<PermissionDto> permissionDtoList = permissionMapper.getPermissionsByRoleName(roleName);
+            for (PermissionDto pDto : permissionDtoList) {
+                if (pDto.getDomain().equals(targetDomainObject) && pDto.getPermission().equals(permission))
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
+        return false;
+    }
+}
+```
+
+
+
+在方法上使用注解 @PreAuthorize("hasPermission('user','delete')")
+
+@PreAuthorize 指的是在进入该方法前，进行hasPermission的权限校验
+
+#### @hasPermission测试
+
+* ROLE_SUPER_ADMIN角色，对域"user"拥有"read","add","delete","edit" 权限 
+* ROLE_NORMAL_EMPLOYEE角色，对域"user"只拥有"read"权限
+
+![4e8ddceb-e4ba-4770-85a1-66af4a1c0c7c](./images/4e8ddceb-e4ba-4770-85a1-66af4a1c0c7c.png)
+
+将登录结果的token复制到请求的Header中，由于ROLE_NORMAL_EMPLOYEE没有user:delete的权限，因此访问拒绝
+
+![70f2c38e-00a6-4d5a-91ce-75b978fef7f3](./images/70f2c38e-00a6-4d5a-91ce-75b978fef7f3.png)
+
+

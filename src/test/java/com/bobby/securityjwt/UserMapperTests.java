@@ -19,6 +19,12 @@ public class UserMapperTests {
     UserMapper userMapper;
 
     @Test
+    void delete() {
+        Long id = 1711636588006879234L;
+        Assert.assertTrue(userMapper.deleteById(id) > 0);
+    }
+
+    @Test
     void testInsert() {
         User user = new User();
         user.setUsername("vividbobo");

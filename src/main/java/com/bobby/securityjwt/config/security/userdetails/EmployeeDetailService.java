@@ -1,5 +1,6 @@
-package com.bobby.securityjwt.service;
+package com.bobby.securityjwt.config.security.userdetails;
 
+import com.bobby.securityjwt.service.SecurityService;
 import jakarta.annotation.Resource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -7,17 +8,18 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 /**
- * @className: UserDetailService
+ * @className: EmployeeDetailService
  * @author: Bobby
- * @date: 10/10/2023
+ * @date: 10/13/2023
  **/
 @Component
-public class MyUserDetailService implements UserDetailsService {
+public class EmployeeDetailService implements UserDetailsService {
     @Resource
-    UserService userService;
+    SecurityService service;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userService.selectByUsername(username);
+
+        return service.getEmployeeDetails(username);
     }
 }

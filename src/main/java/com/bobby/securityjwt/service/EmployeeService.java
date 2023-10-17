@@ -1,5 +1,6 @@
 package com.bobby.securityjwt.service;
 
+import com.bobby.securityjwt.config.security.userdetails.EmployeeDetailService;
 import com.bobby.securityjwt.entity.Employee;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 
 public interface EmployeeService {
     Employee selectByUsername(String username);
+
 
     Employee selectByCode(String code);
 
