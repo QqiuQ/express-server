@@ -1,14 +1,39 @@
 Springboot3 + Mybatis Plus + Security6 + JWT 一个简化的Security+JWT的登录认证
 
 基于[SpringBoot-Vue-Template-Jwt
-](https://github.com/itbaima-study/SpringBoot-Vue-Template-Jwt) 的后端进行一些修改
-，丢弃了一些功能，后续学习该项目时再补上
+](https://github.com/itbaima-study/SpringBoot-Vue-Template-Jwt) 的后端进行一些修改 ，丢弃了一些功能，后续学习该项目时再补上
 
 # 项目环境
 
 JDK17及以上
 
+# 目录结构说明
 
+```java
+-com.bobby.security  //根目录
+    - common 
+        - AjaxResult    // 后端返回结果
+        - xxx   // 其他全局公共属性
+    - config // 配置
+        - mp    // mybatis-plus 配置
+        - redis // 暂时没有引入redis
+        - security  // spring security 6 配置
+            - filter    // 请求过滤器
+            - userdetails   // 登录验证的UserDetails
+            - EmployeePermissionEvaluator.java  // hasPermission 自定义验证
+            - SecurityConfiguration.java    // security 配置类
+        - swagger   // api 文档
+    - controller    // 控制器
+    - entity    // 实体类
+        - dto   // 封装的一些数据传输对象DTO
+    - mapper    // mybatis Mapper接口
+    - service   // 业务服务及实现
+    - util  // 工具类
+
+- resources
+    - mapper    // mybatis xml 数据库映射xml文件
+    - application.yml   // 项目相关配置
+```
 
 # [Mybatis Plus](https://baomidou.com/)
 
@@ -17,6 +42,7 @@ JDK17及以上
 QueryWrapper查询一般在Service层实现
 
 ```java
+
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
     @Resource
@@ -76,6 +102,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 例如EmployeeMapperTests测试类，该测试类种测试了 insert, select 等CRUD操作
 
 ```java
+
 @SpringBootTest
 public class EmployeeMapperTests {
     @Resource
@@ -185,15 +212,13 @@ public class EmployeePermissionEvaluator implements PermissionEvaluator {
 }
 ```
 
-
-
 在方法上使用注解 @PreAuthorize("hasPermission('user','delete')")
 
 @PreAuthorize 指的是在进入该方法前，进行hasPermission的权限校验
 
 #### @hasPermission测试
 
-* ROLE_SUPER_ADMIN角色，对域"user"拥有"read","add","delete","edit" 权限 
+* ROLE_SUPER_ADMIN角色，对域"user"拥有"read","add","delete","edit" 权限
 * ROLE_NORMAL_EMPLOYEE角色，对域"user"只拥有"read"权限
 
 ![4e8ddceb-e4ba-4770-85a1-66af4a1c0c7c](./images/4e8ddceb-e4ba-4770-85a1-66af4a1c0c7c.png)
