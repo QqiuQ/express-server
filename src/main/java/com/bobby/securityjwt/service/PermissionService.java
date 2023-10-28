@@ -1,8 +1,5 @@
 package com.bobby.securityjwt.service;
 
-import com.bobby.securityjwt.entity.Permission;
-import com.bobby.securityjwt.entity.dto.PermissionDto;
-
 import java.util.List;
 
 /**
@@ -12,7 +9,4 @@ import java.util.List;
  **/
 public interface PermissionService {
 
-    List<PermissionDto> getPermissionsByRoleName(String role);
-
-    List<PermissionDto> getPermissionByRoleId(Integer roleId);
 }

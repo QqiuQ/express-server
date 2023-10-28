@@ -1,6 +1,5 @@
 package com.bobby.securityjwt.service.impl;
 
-import com.bobby.securityjwt.entity.dto.PermissionDto;
 import com.bobby.securityjwt.mapper.PermissionMapper;
 import com.bobby.securityjwt.mapper.RoleMapper;
 import com.bobby.securityjwt.service.PermissionService;
@@ -22,15 +21,4 @@ public class PermissionServiceImpl implements PermissionService {
     @Resource
     PermissionMapper permissionMapper;
 
-    @Override
-    public List<PermissionDto> getPermissionsByRoleName(String role) {
-
-
-        return null;
-    }
-
-    @Override
-    public List<PermissionDto> getPermissionByRoleId(Integer roleId) {
-        return null;
-    }
 }

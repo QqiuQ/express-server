@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
  * @date: 10/13/2023
  **/
 @SpringBootTest
-public class EmployeeMapperTests {
+public class EmployeeTests {
     @Resource
     EmployeeMapper mapper;
     @Resource
@@ -36,8 +36,11 @@ public class EmployeeMapperTests {
         employee.setPassword(passwordEncoder.encode("123456"));
         employee.setName("黄准备");
         employee.setAccountStatus(0);   // normal
+        Role role = roleMapper.getRoleByRoleName(RoleConst.SUPER_ADMIN);
+        employee.setRoleId(role.getId());
         employee.setCreateTime(LocalDateTime.now());
         org.junit.Assert.assertTrue(mapper.insert(employee) > 0);
+
     }
 
     @Test
@@ -48,6 +51,8 @@ public class EmployeeMapperTests {
         employee.setPassword(passwordEncoder.encode("123456"));
         employee.setName("普通员工");
         employee.setAccountStatus(0);
+        Role role = roleMapper.getRoleByRoleName(RoleConst.EMPLOYEE);
+        employee.setRoleId(role.getId());
         employee.setCreateTime(LocalDateTime.now());
         Assert.assertTrue(mapper.insert(employee) > 0);
     }

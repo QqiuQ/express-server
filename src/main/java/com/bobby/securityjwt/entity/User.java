@@ -30,6 +30,7 @@ public class User implements Serializable {
     private LocalDateTime lastLoginTime;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+    private Integer roleId;
 
     public static final Integer ACCOUNT_STATUS_NORMAL = 0;  // 正常
     public static final Integer ACCOUNT_STATUS_BLOCK = 1;   // 锁住

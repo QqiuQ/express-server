@@ -2,7 +2,6 @@ package com.bobby.securityjwt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bobby.securityjwt.entity.Permission;
-import com.bobby.securityjwt.entity.dto.PermissionDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,7 +14,7 @@ import java.util.List;
  **/
 @Mapper
 public interface PermissionMapper extends BaseMapper<Permission> {
-    List<PermissionDto> getPermissionsByRoleName(@Param("roleName") String roleName);
+    List<Permission> getByDomain(String domain);
 
-    List<PermissionDto> getPermissionByRoleId(Integer roleId);
+    Permission getByDomainAndPermission(String domain, String permission);
 }

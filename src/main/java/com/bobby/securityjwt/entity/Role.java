@@ -13,14 +13,10 @@ import java.time.LocalDateTime;
  **/
 @Data
 @TableName("role")
-public class Role implements GrantedAuthority {
+public class Role {
     private Integer id;
     private String name;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 
-    @Override
-    public String getAuthority() {
-        return name;
-    }
 }

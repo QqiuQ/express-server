@@ -3,20 +3,28 @@ package com.bobby.securityjwt;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.bobby.securityjwt.common.RoleConst;
+import com.bobby.securityjwt.entity.Role;
 import com.bobby.securityjwt.entity.User;
+import com.bobby.securityjwt.mapper.RoleMapper;
 import com.bobby.securityjwt.mapper.UserMapper;
 import jakarta.annotation.Resource;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Objects;
 
 @SpringBootTest
-public class UserMapperTests {
+public class UserTests {
     @Resource
     UserMapper userMapper;
+    @Resource
+    RoleMapper roleMapper;
+    @Resource
+    PasswordEncoder passwordEncoder;
 
     @Test
     void delete() {
@@ -28,7 +36,9 @@ public class UserMapperTests {
     void testInsert() {
         User user = new User();
         user.setUsername("vividbobo");
-        user.setPassword("123456");
+        user.setPassword(passwordEncoder.encode("123456"));
+        Role role = roleMapper.getRoleByRoleName(RoleConst.USER);
+        user.setRoleId(role.getId());
         Assert.assertTrue(userMapper.insert(user) > 0);
         System.out.println("insert user success");
     }
@@ -37,7 +47,7 @@ public class UserMapperTests {
     void testUpdate() {
         User user = userMapper.selectByUsername("vividbobo");
         Assert.assertNotNull(user);
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.updateById(user);
         User newUser = userMapper.selectByUsername("vividbobo");
         System.out.printf("new password: ", newUser.getPassword());
@@ -46,9 +56,8 @@ public class UserMapperTests {
     @Test
     void BCryptValid() {
         String clearPwd = "123456";
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String encodedPwd = encoder.encode(clearPwd);
-        System.out.println(encoder.matches(clearPwd, encodedPwd));
+        String encodedPwd = passwordEncoder.encode(clearPwd);
+        System.out.println(passwordEncoder.matches(clearPwd, encodedPwd));
     }
 
     @Test

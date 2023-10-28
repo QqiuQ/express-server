@@ -3,6 +3,8 @@ package com.bobby.securityjwt.controller;
 import com.bobby.securityjwt.common.AjaxResult;
 import com.bobby.securityjwt.common.Const;
 import com.bobby.securityjwt.entity.dto.UserDto;
+import com.bobby.securityjwt.service.UserService;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,11 +22,11 @@ public class LoginController {
     /**
      * 不用写登录控制器，因为url已经被security监控了
      */
+    @Resource
+    UserService userService;
 
-//    @RequestMapping("/login")
-//    public AjaxResult userLogin(@RequestBody UserDto userDto, HttpServletResponse response) {
-//
-//
-//
-//    }
+    @RequestMapping("/mylogin")
+    public AjaxResult userLogin(@RequestBody UserDto userDto, HttpServletResponse response) {
+        return userService.myLogin(userDto, response);
+    }
 }

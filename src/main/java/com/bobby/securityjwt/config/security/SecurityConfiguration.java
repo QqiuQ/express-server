@@ -2,6 +2,7 @@ package com.bobby.securityjwt.config.security;
 
 import com.bobby.securityjwt.common.AjaxResult;
 import com.bobby.securityjwt.common.Const;
+import com.bobby.securityjwt.common.Result;
 import com.bobby.securityjwt.config.security.filter.JwtAuthenticationFilter;
 import com.bobby.securityjwt.config.security.filter.RequestLogFilter;
 import com.bobby.securityjwt.entity.Employee;
@@ -62,16 +63,16 @@ public class SecurityConfiguration {
 
     /**
      * 是否开启 hasPermission 注解的自定义校验
+     *
      * @param employeePermissionEvaluator
      * @return
      */
-    @Bean
-    static MethodSecurityExpressionHandler expressionHandler(EmployeePermissionEvaluator employeePermissionEvaluator) {
-        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-        expressionHandler.setPermissionEvaluator(employeePermissionEvaluator);
-        return expressionHandler;
-    }
-
+//    @Bean
+//    static MethodSecurityExpressionHandler expressionHandler(EmployeePermissionEvaluator employeePermissionEvaluator) {
+//        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+//        expressionHandler.setPermissionEvaluator(employeePermissionEvaluator);
+//        return expressionHandler;
+//    }
     @Bean
     public SecurityFilterChain employeeFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -79,7 +80,7 @@ public class SecurityConfiguration {
                 .userDetailsService(employeeDetailService)
                 .authorizeHttpRequests(conf -> conf
                                 .requestMatchers("/employee/login").permitAll() //员工登录接口放行
-                                .anyRequest().hasAnyRole("SUPER_ADMIN")
+                                .anyRequest().permitAll()
                         /**
                          * 哪些角色可以访问
                          * 1.普通员工
@@ -261,13 +262,13 @@ public class SecurityConfiguration {
             writer.write(AjaxResult.error(AjaxResult.HttpStatus.FORBIDDEN, "登录验证频繁，请稍后再试").asJsonString());
         } else {
             // token 写到Header
-            response.setHeader(Const.HEADER, "Bearer " + jwt);
+            String authorization = "Bearer " + jwt;
+            response.setHeader(Const.HEADER, authorization);
+            Result result = Result.success("登录成功");
+            result.put("token", authorization);
+            result.put("expire", utils.expireTime());
 
-            AjaxResult ajax = AjaxResult.success("登录成功");
-            ajax.put("username", user.getUsername());
-            ajax.put("token", jwt);
-            ajax.put("expire", utils.expireTime());
-            writer.write(ajax.asJsonString());
+            writer.write(result.asJsonString());
         }
     }
 
@@ -285,14 +286,13 @@ public class SecurityConfiguration {
             writer.write(AjaxResult.error(AjaxResult.HttpStatus.FORBIDDEN, "登录验证频繁，请稍后再试").asJsonString());
         } else {
             // token 写到Header
-            response.setHeader(Const.HEADER, "Bearer " + jwt);
+            String authorization = "Bearer " + jwt;
+            response.setHeader(Const.HEADER, authorization);
+            Result result = Result.success("登录成功");
+            result.put("token", authorization);
+            result.put("expire", utils.expireTime());
 
-            AjaxResult ajax = AjaxResult.success("登录成功");
-            ajax.put("username", employee.getUsername());
-            ajax.put("code", employee.getCode());
-            ajax.put("token", jwt);
-            ajax.put("expire", utils.expireTime());
-            writer.write(ajax.asJsonString());
+            writer.write(result.asJsonString());
         }
     }
 

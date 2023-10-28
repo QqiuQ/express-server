@@ -24,6 +24,7 @@ public class Employee {  // 由于要实现security登录认证
     private String password;
     private String email;
     private Integer level;
+    private Integer roleId;
     private Integer status;
     private String address;
     private Integer accountStatus;

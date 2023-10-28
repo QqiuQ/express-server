@@ -1,20 +1,17 @@
 package com.bobby.securityjwt.service.impl;
 
-import com.bobby.securityjwt.common.RoleConst;
 import com.bobby.securityjwt.config.security.userdetails.EmployeeDetails;
 import com.bobby.securityjwt.config.security.userdetails.MyUserDetails;
 import com.bobby.securityjwt.entity.Employee;
-import com.bobby.securityjwt.entity.Role;
+import com.bobby.securityjwt.entity.Permission;
 import com.bobby.securityjwt.entity.User;
 import com.bobby.securityjwt.mapper.EmployeeMapper;
-import com.bobby.securityjwt.mapper.EmployeeRoleMapper;
-import com.bobby.securityjwt.mapper.RoleMapper;
+import com.bobby.securityjwt.mapper.RolePermissionMapper;
 import com.bobby.securityjwt.mapper.UserMapper;
 import com.bobby.securityjwt.service.SecurityService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,9 +26,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Resource
     UserMapper userMapper;
     @Resource
-    RoleMapper roleMapper;
-    @Resource
-    EmployeeRoleMapper employeeRoleMapper;
+    RolePermissionMapper rolePermissionMapper;
 
     /**
      * 2. 而员工可以拥有多种角色，例如一个员工他同时是超级管理员又是站点管理员，因此员工的角色从，员工-角色关系表中读取。
@@ -42,8 +37,8 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public EmployeeDetails getEmployeeDetails(String username) {
         Employee employee = employeeMapper.selectByUsername(username);
-        List<Role> roleList = employeeRoleMapper.getRolesByEmployeeId(employee.getId());
-        EmployeeDetails employeeDetails = new EmployeeDetails(employee, roleList);
+        List<Permission> authorities = rolePermissionMapper.getPermissionsByRoleId(employee.getRoleId());
+        EmployeeDetails employeeDetails = new EmployeeDetails(employee, authorities);
         return employeeDetails;
     }
 
@@ -56,9 +51,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public MyUserDetails getMyUserDetails(String username) {
         User user = userMapper.selectByUsername(username);
-        Role userRole = roleMapper.getRoleByRoleName(RoleConst.USER);
-        List<Role> roleList = new ArrayList<>();
-        roleList.add(userRole);
-        return new MyUserDetails(user, roleList);
+        List<Permission> authorities = rolePermissionMapper.getPermissionsByRoleId(user.getRoleId());
+        return new MyUserDetails(user, authorities);
     }
 }

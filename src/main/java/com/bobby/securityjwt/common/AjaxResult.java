@@ -3,9 +3,11 @@ package com.bobby.securityjwt.common;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
 
+import java.io.Serial;
 import java.util.HashMap;
 
 public class AjaxResult extends HashMap<String, Object> {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -135,6 +137,14 @@ public class AjaxResult extends HashMap<String, Object> {
     public static AjaxResult error(String msg, Object data) {
         return new AjaxResult(HttpStatus.ERROR, msg, data);
     }
+
+    /**
+     * 将数据放进字段data里面
+     *
+     * @param key
+     * @param data
+     * @return
+     */
 
     public String asJsonString() {
         return JSONObject.toJSONString(this, JSONWriter.Feature.WriteNulls);

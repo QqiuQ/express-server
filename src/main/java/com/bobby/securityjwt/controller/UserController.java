@@ -6,11 +6,10 @@ import com.bobby.securityjwt.service.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,13 +24,11 @@ public class UserController {
     @Resource
     UserService userService;
 
-    @GetMapping("/test")
-    public AjaxResult test() {
-        return AjaxResult.success("test success");
-    }
+    @Resource
+    PasswordEncoder passwordEncoder;
 
     @GetMapping()
-    @PostAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('user:list')")
     public AjaxResult list() {
         List<User> userList = userService.getUserList();
         if (Objects.isNull(userList)) return AjaxResult.error("查找错误");
@@ -39,7 +36,6 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
-    @PreAuthorize("hasPermission('user','read')")   // 要求当前用户的角色拥有user,delete的权限
     public AjaxResult info(@PathVariable("username") String username) {
         User user = userService.selectByUsername(username);
         if (Objects.isNull(user)) {
@@ -49,11 +45,33 @@ public class UserController {
     }
 
     @RequestMapping("/delete/{id}")
-    @PreAuthorize("hasPermission('user','delete')") // 要求当前用户的角色拥有user,delete的权限
+    @PreAuthorize("hasAuthority('user:delete')") // 要求当前用户的角色拥有user,delete的权限
     public AjaxResult delete(@PathVariable("id") Long id) {
         if (userService.deleteById(id))
             return AjaxResult.success("删除成功");
         else return AjaxResult.error("删除失败");
+    }
+
+    @RequestMapping("/add")
+    @PreAuthorize("hasAuthority('user:add')")
+    public AjaxResult add(@RequestBody User user) {
+        user.setCreateTime(LocalDateTime.now());
+        // 密码加密处理
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        int res = userService.insert(user);
+        if (res > 0) {
+            return AjaxResult.success("添加成功");
+        }
+        return AjaxResult.error("添加失败");
+    }
+
+    @RequestMapping("/edit")
+    @PreAuthorize("hasAuthority('user:edit')")
+    public AjaxResult edit(@RequestBody User user) {
+        int res = userService.update(user);
+        if (res > 0) return AjaxResult.success("修改成功");
+        return AjaxResult.error("修改失败");
     }
 
 }

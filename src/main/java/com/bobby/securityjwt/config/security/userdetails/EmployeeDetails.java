@@ -1,7 +1,7 @@
 package com.bobby.securityjwt.config.security.userdetails;
 
 import com.bobby.securityjwt.entity.Employee;
-import com.bobby.securityjwt.entity.Role;
+import com.bobby.securityjwt.entity.Permission;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,20 +20,19 @@ public class EmployeeDetails implements UserDetails {
     private String username;
     private String password;
     private Integer accountStatus;
-    private List<Role> roleList;
+    private List<Permission> permissionAuthorities;
 
-    public EmployeeDetails(Employee employee, List<Role> roleList) {
+    public EmployeeDetails(Employee employee, List<Permission> permissionAuthorities) {
         this.username = employee.getUsername();
         this.password = employee.getPassword();
         this.accountStatus = employee.getAccountStatus();
-        this.roleList = roleList;
+        this.permissionAuthorities = permissionAuthorities;
     }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
-        return roleList;
+        return permissionAuthorities;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.bobby.securityjwt.config.security.userdetails;
 
-import com.bobby.securityjwt.entity.Role;
+import com.bobby.securityjwt.entity.Permission;
 import com.bobby.securityjwt.entity.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,19 +20,19 @@ public class MyUserDetails implements UserDetails {
     private String username;
     private String password;
     private Integer accountStatus;
-    private List<Role> roleList;
+    private List<Permission> permissionAuthorities;
 
-    public MyUserDetails(User user, List<Role> roleList) {
+    public MyUserDetails(User user, List<Permission> roleList) {
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.accountStatus = user.getAccountStatus();
-        this.roleList = roleList;
+        this.permissionAuthorities = roleList;
     }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roleList;
+        return permissionAuthorities;
     }
 
     @Override

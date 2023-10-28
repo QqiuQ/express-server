@@ -1,6 +1,5 @@
 package com.bobby.securityjwt.config.security;
 
-import com.bobby.securityjwt.entity.dto.PermissionDto;
 import com.bobby.securityjwt.mapper.PermissionMapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ import java.util.List;
  * https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/PermissionEvaluator.html
  **/
 @Slf4j
-@Component
 public class EmployeePermissionEvaluator implements PermissionEvaluator {
 
     @Resource
@@ -54,17 +52,8 @@ public class EmployeePermissionEvaluator implements PermissionEvaluator {
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-        // 根据 roleName 获取相应的 Permissionso
-        for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
-            String roleName = grantedAuthority.getAuthority();
-            List<PermissionDto> permissionDtoList = permissionMapper.getPermissionsByRoleName(roleName);
-            for (PermissionDto pDto : permissionDtoList) {
-                if (pDto.getDomain().equals(targetDomainObject) && pDto.getPermission().equals(permission))
-                    return true;
-            }
-        }
 
-        return false;
+        return true;
     }
 
     @Override
