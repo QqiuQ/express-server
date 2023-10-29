@@ -21,7 +21,7 @@ public class UserDetailsTests {
 
         UserDetails employeeDetails = service.getEmployeeDetails("bobby");
         UserDetails normalUesrDetails = service.getEmployeeDetails("normaluser");
-        UserDetails userDetails = service.getMyUserDetails("vividbobo");
+        UserDetails userDetails = service.getUserDetails("vividbobo");
 
         System.out.println(employeeDetails);
         System.out.println(normalUesrDetails);

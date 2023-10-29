@@ -1,16 +1,30 @@
 package com.bobby.securityjwt.controller;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.bobby.securityjwt.common.AccountConst;
 import com.bobby.securityjwt.common.AjaxResult;
+import com.bobby.securityjwt.common.Result;
 import com.bobby.securityjwt.entity.User;
+import com.bobby.securityjwt.entity.UserRole;
+import com.bobby.securityjwt.mapper.UserMapper;
+import com.bobby.securityjwt.mapper.UserRoleMapper;
 import com.bobby.securityjwt.service.UserService;
+import com.bobby.securityjwt.util.JwtUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Resource;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -18,25 +32,38 @@ import java.util.Objects;
  * @author: Bobby
  * @date: 10/14/2023
  **/
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
     @Resource
     UserService userService;
+    @Resource
+    UserMapper userMapper;
 
     @Resource
     PasswordEncoder passwordEncoder;
+    @Resource
+    UserRoleMapper userRoleMapper;
 
-    @GetMapping()
-    @PreAuthorize("hasAuthority('user:list')")
-    public AjaxResult list() {
-        List<User> userList = userService.getUserList();
-        if (Objects.isNull(userList)) return AjaxResult.error("查找错误");
-        return AjaxResult.success(userList);
+    @Resource
+    JwtUtils jwtUtils;
+
+//    @GetMapping()
+//    public AjaxResult list() {
+//        List<User> userList = userService.getUserList();
+//        if (Objects.isNull(userList)) return AjaxResult.error("查找错误");
+//        return AjaxResult.success(userList);
+//    }
+
+    @RequestMapping()
+    public AjaxResult list(@Param("pageNow") Integer page, @Param("pageSize") Integer size) {
+        IPage<User> userIPage = userMapper.selectPage(new Page<User>(page, size), null);
+        return AjaxResult.success(userIPage);
     }
 
     @GetMapping("/{username}")
-    public AjaxResult info(@PathVariable("username") String username) {
+    public AjaxResult userInfo(@PathVariable("username") String username) {
         User user = userService.selectByUsername(username);
         if (Objects.isNull(user)) {
             return AjaxResult.error("该用户不存在");
@@ -45,7 +72,6 @@ public class UserController {
     }
 
     @RequestMapping("/delete/{id}")
-    @PreAuthorize("hasAuthority('user:delete')") // 要求当前用户的角色拥有user,delete的权限
     public AjaxResult delete(@PathVariable("id") Long id) {
         if (userService.deleteById(id))
             return AjaxResult.success("删除成功");
@@ -53,7 +79,6 @@ public class UserController {
     }
 
     @RequestMapping("/add")
-    @PreAuthorize("hasAuthority('user:add')")
     public AjaxResult add(@RequestBody User user) {
         user.setCreateTime(LocalDateTime.now());
         // 密码加密处理
@@ -67,7 +92,6 @@ public class UserController {
     }
 
     @RequestMapping("/edit")
-    @PreAuthorize("hasAuthority('user:edit')")
     public AjaxResult edit(@RequestBody User user) {
         int res = userService.update(user);
         if (res > 0) return AjaxResult.success("修改成功");

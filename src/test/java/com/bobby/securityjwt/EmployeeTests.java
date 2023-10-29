@@ -3,8 +3,10 @@ package com.bobby.securityjwt;
 import com.bobby.securityjwt.common.RoleConst;
 import com.bobby.securityjwt.entity.Employee;
 import com.bobby.securityjwt.entity.Role;
+import com.bobby.securityjwt.entity.UserRole;
 import com.bobby.securityjwt.mapper.EmployeeMapper;
 import com.bobby.securityjwt.mapper.RoleMapper;
+import com.bobby.securityjwt.mapper.UserRoleMapper;
 import jakarta.annotation.Resource;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -24,8 +26,6 @@ public class EmployeeTests {
     EmployeeMapper mapper;
     @Resource
     PasswordEncoder passwordEncoder;
-    @Resource
-    RoleMapper roleMapper;
 
     @Test
     public void insertSuperAdmin() {
@@ -36,8 +36,7 @@ public class EmployeeTests {
         employee.setPassword(passwordEncoder.encode("123456"));
         employee.setName("黄准备");
         employee.setAccountStatus(0);   // normal
-        Role role = roleMapper.getRoleByRoleName(RoleConst.SUPER_ADMIN);
-        employee.setRoleId(role.getId());
+
         employee.setCreateTime(LocalDateTime.now());
         org.junit.Assert.assertTrue(mapper.insert(employee) > 0);
 
@@ -51,8 +50,8 @@ public class EmployeeTests {
         employee.setPassword(passwordEncoder.encode("123456"));
         employee.setName("普通员工");
         employee.setAccountStatus(0);
-        Role role = roleMapper.getRoleByRoleName(RoleConst.EMPLOYEE);
-        employee.setRoleId(role.getId());
+//        Role role = roleMapper.getRoleByRoleName(RoleConst.EMPLOYEE);
+//        employee.setRoleId(role.getId());
         employee.setCreateTime(LocalDateTime.now());
         Assert.assertTrue(mapper.insert(employee) > 0);
     }

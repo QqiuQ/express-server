@@ -3,18 +3,21 @@ package com.bobby.securityjwt;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.bobby.securityjwt.common.AccountConst;
 import com.bobby.securityjwt.common.RoleConst;
 import com.bobby.securityjwt.entity.Role;
 import com.bobby.securityjwt.entity.User;
+import com.bobby.securityjwt.entity.UserRole;
 import com.bobby.securityjwt.mapper.RoleMapper;
 import com.bobby.securityjwt.mapper.UserMapper;
+import com.bobby.securityjwt.mapper.UserRoleMapper;
 import jakarta.annotation.Resource;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @SpringBootTest
@@ -22,9 +25,11 @@ public class UserTests {
     @Resource
     UserMapper userMapper;
     @Resource
+    PasswordEncoder passwordEncoder;
+    @Resource
     RoleMapper roleMapper;
     @Resource
-    PasswordEncoder passwordEncoder;
+    UserRoleMapper userRoleMapper;
 
     @Test
     void delete() {
@@ -37,8 +42,6 @@ public class UserTests {
         User user = new User();
         user.setUsername("vividbobo");
         user.setPassword(passwordEncoder.encode("123456"));
-        Role role = roleMapper.getRoleByRoleName(RoleConst.USER);
-        user.setRoleId(role.getId());
         Assert.assertTrue(userMapper.insert(user) > 0);
         System.out.println("insert user success");
     }
@@ -74,8 +77,10 @@ public class UserTests {
     @Test
     public void testPage() {
         Page<User> page = new Page<>(1, 2);
-        IPage<User> userIPage = userMapper.selectPage(page, new QueryWrapper<User>()
-                .like("username", "user"));
+//        IPage<User> userIPage = userMapper.selectPage(page, new QueryWrapper<User>()
+//                .like("username", "user"));
+
+        IPage<User> userIPage = userMapper.selectPage(page, null);
         Assert.assertSame(page, userIPage);
         System.out.println("Total Records: " + userIPage.getTotal());
         System.out.println("Total Pages: " + userIPage.getCurrent());
@@ -92,7 +97,28 @@ public class UserTests {
             System.out.println("username: " + user.getUsername());
             System.out.println("password: " + user.getPassword());
         }
+    }
 
+    @Test
+    public void addUsers() {
+        Role userRole = roleMapper.getRoleByRoleName(RoleConst.USER);
+        for (int i = 0; i < 20; i++) {
+            String username = "user_" + i;
+            String password = "123456";
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword(passwordEncoder.encode(password));
+            user.setCreateTime(LocalDateTime.now());
+
+            // 创建角色关联
+            if (userMapper.insert(user) > 0) {
+                User curUser = userMapper.selectByUsername(username);
+                UserRole ur = new UserRole(curUser.getId(), userRole.getId(), AccountConst.TYPE_USER);
+                Assert.assertTrue(userRoleMapper.insert(ur) > 0);
+            } else {
+                Assert.assertTrue(false);   // insert user failed
+            }
+        }
     }
 
 }

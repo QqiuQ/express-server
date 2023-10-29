@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
  * @date: 10/13/2023
  **/
 @Component
+@Deprecated
 public class EmployeeDetailService implements UserDetailsService {
     @Resource
     SecurityService service;

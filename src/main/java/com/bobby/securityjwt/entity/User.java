@@ -15,24 +15,10 @@ import java.time.LocalDateTime;
  **/
 @Data
 @TableName("user")
-public class User implements Serializable {
-    private Long id;
+public class User extends Account implements Serializable {
     private String nickname;
     private Integer sex;
     private String phone;
-    private String username;
-    private String password;
-    private String email;
     private LocalDate birthday;
     private LocalDateTime registerTime;
-    private String avatar;
-    private Integer accountStatus;
-    private LocalDateTime lastLoginTime;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
-    private Integer roleId;
-
-    public static final Integer ACCOUNT_STATUS_NORMAL = 0;  // 正常
-    public static final Integer ACCOUNT_STATUS_BLOCK = 1;   // 锁住
-    public static final Integer ACCOUNT_STATUS_REMOVE = 2;  // 封禁
 }

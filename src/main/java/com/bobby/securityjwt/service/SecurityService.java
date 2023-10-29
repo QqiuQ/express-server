@@ -1,8 +1,6 @@
 package com.bobby.securityjwt.service;
 
-import com.bobby.securityjwt.config.security.userdetails.EmployeeDetails;
-import com.bobby.securityjwt.config.security.userdetails.MyUserDetails;
-import org.springframework.stereotype.Component;
+import com.bobby.securityjwt.config.security.userdetails.AccountDetails;
 
 /**
  * @className: SecurityService
@@ -13,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 public interface SecurityService {
 
-    EmployeeDetails getEmployeeDetails(String username);
+    AccountDetails getEmployeeDetails(String username);
 
-    MyUserDetails getMyUserDetails(String username);
+    AccountDetails getUserDetails(String username);
 }

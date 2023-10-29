@@ -1,11 +1,14 @@
 package com.bobby.securityjwt.config.security;
 
+import com.bobby.securityjwt.common.AccountConst;
 import com.bobby.securityjwt.common.AjaxResult;
 import com.bobby.securityjwt.common.Const;
 import com.bobby.securityjwt.common.Result;
 import com.bobby.securityjwt.config.security.filter.JwtAuthenticationFilter;
 import com.bobby.securityjwt.config.security.filter.RequestLogFilter;
-import com.bobby.securityjwt.entity.Employee;
+import com.bobby.securityjwt.config.security.userdetails.AccountDetailService;
+import com.bobby.securityjwt.config.security.userdetails.AccountDetails;
+import com.bobby.securityjwt.entity.Account;
 import com.bobby.securityjwt.config.security.userdetails.EmployeeDetailService;
 import com.bobby.securityjwt.service.EmployeeService;
 import com.bobby.securityjwt.config.security.userdetails.MyUserDetailService;
@@ -18,8 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -31,6 +32,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * SpringSecurity相关配置
@@ -46,6 +49,9 @@ public class SecurityConfiguration {
     @Resource
     RequestLogFilter requestLogFilter;
 
+//    @Resource
+//    AccountAuthenticationFilter accountAuthenticationFilter;
+
     @Resource
     JwtUtils utils;
 
@@ -60,60 +66,62 @@ public class SecurityConfiguration {
     @Resource
     EmployeeDetailService employeeDetailService;
 
+    @Resource
+    AccountDetailService accountDetailService;
 
-    /**
-     * 是否开启 hasPermission 注解的自定义校验
-     *
-     * @param employeePermissionEvaluator
-     * @return
-     */
+    //    /**
+//     * 是否开启 hasPermission 注解的自定义校验
+//     *
+//     * @param employeePermissionEvaluator
+//     * @return
+//     */
 //    @Bean
 //    static MethodSecurityExpressionHandler expressionHandler(EmployeePermissionEvaluator employeePermissionEvaluator) {
 //        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
 //        expressionHandler.setPermissionEvaluator(employeePermissionEvaluator);
 //        return expressionHandler;
 //    }
-    @Bean
-    public SecurityFilterChain employeeFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .securityMatcher("/employee/**")
-                .userDetailsService(employeeDetailService)
-                .authorizeHttpRequests(conf -> conf
-                                .requestMatchers("/employee/login").permitAll() //员工登录接口放行
-                                .anyRequest().permitAll()
-                        /**
-                         * 哪些角色可以访问
-                         * 1.普通员工
-                         * 2.快递员
-                         * 3.站点管理员
-                         * 4.超级管理员
-                         *
-                         * 不同角色访问哪些接口
-                         * 可以通过对Controller的具体方法添加角色验证注解
-                         */
-                )
-                .formLogin(conf -> conf
-                        .loginProcessingUrl("/employee/login")
-                        .failureHandler(this::handleFailure)
-                        .successHandler(this::handleEmployeeLoginSuccess)
-                        .permitAll()
-                )
-                .logout(conf -> conf
-                        .logoutUrl("/employee/logout")
-                        .logoutSuccessHandler(this::onLogoutSuccess)
-                )
-                .exceptionHandling(conf -> conf
-                        .accessDeniedHandler(this::handleProcess)
-                        .authenticationEntryPoint(this::handleProcess)
-                )
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(conf -> conf
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(requestLogFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, RequestLogFilter.class);   // 验证token
-
-        return httpSecurity.build();
-    }
+//    @Bean
+//    public SecurityFilterChain employeeFilterChain(HttpSecurity httpSecurity) throws Exception {
+//        httpSecurity
+//                .securityMatcher("/employee/**")
+//                .userDetailsService(employeeDetailService)
+//                .authorizeHttpRequests(conf -> conf
+//                                .requestMatchers("/employee/login").permitAll() //员工登录接口放行
+//                                .anyRequest().permitAll()
+//                        /**
+//                         * 哪些角色可以访问
+//                         * 1.普通员工
+//                         * 2.快递员
+//                         * 3.站点管理员
+//                         * 4.超级管理员
+//                         *
+//                         * 不同角色访问哪些接口
+//                         * 可以通过对Controller的具体方法添加角色验证注解
+//                         */
+//                )
+//                .formLogin(conf -> conf
+//                        .loginProcessingUrl("/employee/login")
+//                        .failureHandler(this::handleFailure)
+//                        .successHandler(this::handleEmployeeLoginSuccess)
+//                        .permitAll()
+//                )
+//                .logout(conf -> conf
+//                        .logoutUrl("/employee/logout")
+//                        .logoutSuccessHandler(this::onLogoutSuccess)
+//                )
+//                .exceptionHandling(conf -> conf
+//                        .accessDeniedHandler(this::handleProcess)
+//                        .authenticationEntryPoint(this::handleProcess)
+//                )
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .sessionManagement(conf -> conf
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .addFilterBefore(requestLogFilter, UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(jwtAuthenticationFilter, RequestLogFilter.class);   // 验证token
+//
+//        return httpSecurity.build();
+//    }
 
     /**
      * 针对于 SpringSecurity 6 的新版配置方法
@@ -123,9 +131,9 @@ public class SecurityConfiguration {
      * @throws Exception 可能的异常
      */
     @Bean
-    public SecurityFilterChain userFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain accountFilterChain(HttpSecurity http) throws Exception {
         return http
-                .userDetailsService(myUserDetailService)
+                .userDetailsService(accountDetailService)
                 .authorizeHttpRequests(conf -> conf
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .anyRequest().permitAll()
@@ -137,7 +145,7 @@ public class SecurityConfiguration {
                         // 登录采用Params username & password
                         .loginProcessingUrl("/login")
                         .failureHandler(this::handleFailure)
-                        .successHandler(this::handleUserLoginSuccess)
+                        .successHandler(this::handleLoginSuccess)
                         .permitAll()
                 )
                 .logout(conf -> conf
@@ -156,7 +164,6 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthenticationFilter, RequestLogFilter.class)   // 每次请求时，验证是否有token
                 .build();
     }
-
 
     /**
      * 将多种类型的Handler整合到同一个方法中，包含：
@@ -247,17 +254,25 @@ public class SecurityConfiguration {
         }
     }
 
-    private void handleUserLoginSuccess(HttpServletRequest httpServletRequest
+    private void handleLoginSuccess(HttpServletRequest httpServletRequest
             , HttpServletResponse response
             , Authentication authentication) throws IOException {
         response.setContentType(Const.CONTENT_TYPE);
         PrintWriter writer = response.getWriter();
-
         // 认证
-        UserDetails authUser = (UserDetails) authentication.getPrincipal();
-        com.bobby.securityjwt.entity.User user = userService.selectByUsername(authUser.getUsername());
+        AccountDetails authUser = (AccountDetails) authentication.getPrincipal();
+        log.info(authUser.getAccountType());
+        Account account = null;
+        if (authUser.getAccountType().equals(AccountConst.TYPE_USER)) {
+            account = userService.selectByUsername(authUser.getUsername());
+        } else if (authUser.getAccountType().equals(AccountConst.TYPE_EMPLOYEE)) {
+            account = employeeService.selectByUsername(authUser.getUsername());
+        }
+        if (account == null) {
+            writer.write(Result.error("用户不存在").asJsonString());
+        }
         // 利用用户名和ID生成token
-        String jwt = utils.createJwt(authUser, user.getUsername(), user.getId());
+        String jwt = utils.createJwt(authUser, account.getUsername(), account.getId());
         if (jwt == null) {
             writer.write(AjaxResult.error(AjaxResult.HttpStatus.FORBIDDEN, "登录验证频繁，请稍后再试").asJsonString());
         } else {
@@ -265,36 +280,39 @@ public class SecurityConfiguration {
             String authorization = "Bearer " + jwt;
             response.setHeader(Const.HEADER, authorization);
             Result result = Result.success("登录成功");
-            result.put("token", authorization);
-            result.put("expire", utils.expireTime());
-
+            Map<String, Object> data = new HashMap<>();
+            data.put("token", authorization);
+            data.put("expire", utils.expireTime());
+            data.put("accountType", authUser.getAccountType());
+            result.setData(data);
             writer.write(result.asJsonString());
         }
     }
 
-    private void handleEmployeeLoginSuccess(HttpServletRequest httpServletRequest
-            , HttpServletResponse response
-            , Authentication authentication) throws IOException {
-
-        response.setContentType(Const.CONTENT_TYPE);
-        PrintWriter writer = response.getWriter();
-
-        UserDetails authUser = (UserDetails) authentication.getPrincipal();
-        Employee employee = employeeService.selectByUsername(authUser.getUsername());
-        String jwt = utils.createJwt(authUser, employee.getUsername(), employee.getId());
-        if (jwt == null) {
-            writer.write(AjaxResult.error(AjaxResult.HttpStatus.FORBIDDEN, "登录验证频繁，请稍后再试").asJsonString());
-        } else {
-            // token 写到Header
-            String authorization = "Bearer " + jwt;
-            response.setHeader(Const.HEADER, authorization);
-            Result result = Result.success("登录成功");
-            result.put("token", authorization);
-            result.put("expire", utils.expireTime());
-
-            writer.write(result.asJsonString());
-        }
-    }
+//    private void handleEmployeeLoginSuccess(HttpServletRequest httpServletRequest
+//            , HttpServletResponse response
+//            , Authentication authentication) throws IOException {
+//
+//        response.setContentType(Const.CONTENT_TYPE);
+//        PrintWriter writer = response.getWriter();
+//
+//        UserDetails authUser = (UserDetails) authentication.getPrincipal();
+//        Employee employee = employeeService.selectByUsername(authUser.getUsername());
+//        String jwt = utils.createJwt(authUser, employee.getUsername(), employee.getId());
+//        if (jwt == null) {
+//            writer.write(AjaxResult.error(AjaxResult.HttpStatus.FORBIDDEN, "登录验证频繁，请稍后再试").asJsonString());
+//        } else {
+//            // token 写到Header
+//            String authorization = "Bearer " + jwt;
+//            response.setHeader(Const.HEADER, authorization);
+//            Result result = Result.success("登录成功");
+//            Map<String, Object> data = new HashMap<>();
+//            data.put("token", authorization);
+//            data.put("expire", utils.expireTime());
+//            result.setData(data);
+//            writer.write(result.asJsonString());
+//        }
+//    }
 
 
 }

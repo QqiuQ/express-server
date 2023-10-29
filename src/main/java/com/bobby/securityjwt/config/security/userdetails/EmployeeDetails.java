@@ -2,6 +2,7 @@ package com.bobby.securityjwt.config.security.userdetails;
 
 import com.bobby.securityjwt.entity.Employee;
 import com.bobby.securityjwt.entity.Permission;
+import com.bobby.securityjwt.entity.Role;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,14 +16,15 @@ import java.util.List;
  * @date: 10/17/2023
  **/
 @Data
+@Deprecated
 public class EmployeeDetails implements UserDetails {
 
     private String username;
     private String password;
     private Integer accountStatus;
-    private List<Permission> permissionAuthorities;
+    private List<Role> permissionAuthorities;
 
-    public EmployeeDetails(Employee employee, List<Permission> permissionAuthorities) {
+    public EmployeeDetails(Employee employee, List<Role> permissionAuthorities) {
         this.username = employee.getUsername();
         this.password = employee.getPassword();
         this.accountStatus = employee.getAccountStatus();

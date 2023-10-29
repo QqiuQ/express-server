@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
  * @author: Bobby
  * @date: 10/17/2023
  **/
+@Deprecated
 @Data
 @TableName("permission")
 public class Permission implements GrantedAuthority {

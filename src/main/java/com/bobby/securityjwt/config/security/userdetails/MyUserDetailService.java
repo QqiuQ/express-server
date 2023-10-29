@@ -13,12 +13,13 @@ import org.springframework.stereotype.Component;
  * @date: 10/10/2023
  **/
 @Component
+@Deprecated
 public class MyUserDetailService implements UserDetailsService {
     @Resource
     SecurityService service;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return service.getMyUserDetails(username);
+        return service.getUserDetails(username);
     }
 }

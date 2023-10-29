@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
  * @author: Bobby
  * @date: 10/24/2023
  **/
+@Deprecated()
 @Data
 @TableName("role_permission")
 public class RolePermission {

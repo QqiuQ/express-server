@@ -2,11 +2,11 @@ package com.bobby.securityjwt.common;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
+import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @className: Result
@@ -14,17 +14,22 @@ import java.util.Map;
  * @date: 10/25/2023
  * 统一返回接口
  **/
+@Data
 public class Result implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     public Integer code;
-    public String msg;
-    public Map<String, Object> data;
+    public String message;
+    public Object data;
+
+    public Result() {
+        this.data = new HashMap<>();
+    }
 
     public Result(Integer code, String msg) {
         this.code = code;
-        this.msg = msg;
+        this.message = msg;
         this.data = new HashMap<>();
     }
 
@@ -36,17 +41,13 @@ public class Result implements Serializable {
         return new Result(HttpStatus.SUCCESS, msg);
     }
 
+
     public static Result error() {
         return new Result(HttpStatus.ERROR, "操作失败");
     }
 
     public static Result error(String msg) {
         return new Result(HttpStatus.ERROR, msg);
-    }
-
-    // 放到data Map中
-    public void put(String key, Object value) {
-        this.data.put(key, value);
     }
 
     public String asJsonString() {
@@ -127,11 +128,13 @@ public class Result implements Serializable {
         /**
          * 系统内部错误
          */
-        public static final int ERROR = 500;
+        public static final int ERROR = 20000;
 
         /**
          * 未实现相应接口
          */
         public static final int NOT_IMPLEMENTED = 501;
+        public static final Integer TOKEN_EXPIRED = 50014;
+        public static final Integer ILLEGAL_TOKEN = 50008;
     }
 }

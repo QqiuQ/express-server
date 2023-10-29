@@ -1,8 +1,8 @@
 package com.bobby.securityjwt.config.security.userdetails;
 
-import com.bobby.securityjwt.entity.Permission;
+import com.bobby.securityjwt.entity.Account;
+import com.bobby.securityjwt.entity.Employee;
 import com.bobby.securityjwt.entity.Role;
-import com.bobby.securityjwt.entity.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,30 +11,33 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @className: MyUserDetails
+ * @className: AccountDetails
  * @author: Bobby
- * @date: 10/17/2023
+ * @date: 10/29/2023
  **/
 @Data
-@Deprecated
-public class MyUserDetails implements UserDetails {
-
+public class AccountDetails implements UserDetails {
     private String username;
     private String password;
     private Integer accountStatus;
-    private List<Role> permissionAuthorities;
+    private String accountType;
+    private List<Role> roleList;
 
-    public MyUserDetails(User user, List<Role> roleList) {
-        this.username = user.getUsername();
-        this.password = user.getPassword();
-        this.accountStatus = user.getAccountStatus();
-        this.permissionAuthorities = roleList;
+    public AccountDetails(Account account, List<Role> permissionAuthorities) {
+        this.username = account.getUsername();
+        this.password = account.getPassword();
+        this.accountStatus = account.getAccountStatus();
+        this.roleList = permissionAuthorities;
     }
 
+    public AccountDetails(Account account, List<Role> roleList, String typeUser) {
+        this(account, roleList);
+        this.accountType = typeUser;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return permissionAuthorities;
+        return roleList;
     }
 
     @Override
@@ -47,9 +50,6 @@ public class MyUserDetails implements UserDetails {
         return username;
     }
 
-    /**
-     * 如果有其他字段，以下作相应处理
-     */
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -57,7 +57,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return accountStatus == User.ACCOUNT_STATUS_NORMAL;
+        return accountStatus == Employee.ACCOUNT_STATUS_NORMAL;
     }
 
     @Override
