@@ -13,6 +13,11 @@ import com.bobby.securityjwt.mapper.UserRoleMapper;
 import com.bobby.securityjwt.service.UserService;
 import com.bobby.securityjwt.util.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +37,7 @@ import java.util.Objects;
  * @author: Bobby
  * @date: 10/14/2023
  **/
+@Tag(name = "UserController", description = "用户相关接口")
 @Slf4j
 @RestController
 @RequestMapping("/user")
@@ -56,14 +62,32 @@ public class UserController {
 //        return AjaxResult.success(userList);
 //    }
 
-    @RequestMapping()
-    public AjaxResult list(@Param("pageNow") Integer page, @Param("pageSize") Integer size) {
-        IPage<User> userIPage = userMapper.selectPage(new Page<User>(page, size), null);
+    @Operation(summary = "用户列表(分页)", description = "以分页形式返回所有用户",
+            parameters = {
+                    @Parameter(name = "pageNow", description = "当前页"),
+                    @Parameter(name = "pageSize", description = "页大小")
+            },
+            responses = {
+                    @ApiResponse(description = "返回当前页的所有用户",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(anyOf = {Result.class, User.class}))),
+            }
+    )
+    @GetMapping()
+    public AjaxResult list(Integer pageNow, Integer pageSize) {
+        IPage<User> userIPage = userMapper.selectPage(new Page<User>(pageNow, pageSize), null);
         return AjaxResult.success(userIPage);
     }
 
+    @Operation(summary = "用户信息", description = "根据用户名查看用户信息",
+            parameters = {
+                    @Parameter(name = "username", description = "用户名"),
+            })
+    @ApiResponse(description = "若用户存在，则返回用户信息",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = User.class)))
     @GetMapping("/{username}")
-    public AjaxResult userInfo(@PathVariable("username") String username) {
+    public AjaxResult userinfo(@PathVariable("username") String username) {
         User user = userService.selectByUsername(username);
         if (Objects.isNull(user)) {
             return AjaxResult.error("该用户不存在");
@@ -71,14 +95,14 @@ public class UserController {
         return AjaxResult.success(user);
     }
 
-    @RequestMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public AjaxResult delete(@PathVariable("id") Long id) {
         if (userService.deleteById(id))
             return AjaxResult.success("删除成功");
         else return AjaxResult.error("删除失败");
     }
 
-    @RequestMapping("/add")
+    @PostMapping("/add")
     public AjaxResult add(@RequestBody User user) {
         user.setCreateTime(LocalDateTime.now());
         // 密码加密处理
@@ -91,7 +115,7 @@ public class UserController {
         return AjaxResult.error("添加失败");
     }
 
-    @RequestMapping("/edit")
+    @PutMapping("/edit")
     public AjaxResult edit(@RequestBody User user) {
         int res = userService.update(user);
         if (res > 0) return AjaxResult.success("修改成功");

@@ -128,7 +128,7 @@ public class Result implements Serializable {
         /**
          * 系统内部错误
          */
-        public static final int ERROR = 20000;
+        public static final int ERROR = 500;
 
         /**
          * 未实现相应接口
