@@ -10,7 +10,7 @@ JDK17及以上
 # 目录结构说明
 
 ```java
--com.bobby.security  //根目录
+-com.team24.security  //根目录
     - common 
         - AjaxResult    // 后端返回结果
         - xxx   // 其他全局公共属性
@@ -75,12 +75,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
-<mapper namespace="com.bobby.securityjwt.mapper.EmployeeMapper">
+<mapper namespace="com.team24.express.mapper.EmployeeMapper">
 
     <!--    namespace 具体到自定义的Mapper接口，其余部分为固定模板-->
     <!--    在 mapper 代码块内编写 sql 操作-->
     <!--    id 应与 Mapper接口类种定义的方法名一致，且 resultType 为该接口方法的返回类型-->
-    <select id="selectByCode" resultType="com.bobby.securityjwt.entity.Employee">
+    <select id="selectByCode" resultType="com.team24.express.entity.Employee">
         select * from employee
         <where>
             <if test="code !=null and code != ''">
