@@ -1,6 +1,7 @@
 package com.team24.express.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Data
 @TableName("station")
 public class Station {
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
     private String phone;
     private String landlineNumber;

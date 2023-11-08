@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Schema(name = "Account", title = "账户类", description = "账户类属性，是User类和Employee类的基类")
 @Data
 public class Account {
+
     private Long id;
     private String username;
     private String password;
