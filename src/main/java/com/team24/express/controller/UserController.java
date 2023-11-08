@@ -67,11 +67,6 @@ public class UserController {
         Result result = Result.success("查询成功");
         result.setData(userList);
 
-//        Page page = new Page(5, 10);   // 第5页，每页10条数据
-//        QueryWrapper<User> wrapper = new QueryWrapper<User>();
-//        IPage<User> iPage = userMapper.selectPage(page, wrapper);  //IPage<User> ==> List<User>
-//
-
         return result;
     }
 
@@ -95,37 +90,40 @@ public class UserController {
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = User.class)))
     @GetMapping("/{username}")
-    public AjaxResult userinfo(@PathVariable("username") String username) {
+    public Result userinfo(@PathVariable("username") String username) {
         User user = userService.selectByUsername(username);
         if (Objects.isNull(user)) {
-            return AjaxResult.error("该用户不存在");
+            return Result.error("该用户不存在");
         }
-        return AjaxResult.success(user);
+        Result result = Result.success();
+        result.setData(user);
+        return result;
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','STATION_ADMIN')")
+    //    @PreAuthorize("hasAnyRole('SUPER_ADMIN','STATION_ADMIN')")
     @PostMapping("/delete")
-    public AjaxResult delete(@RequestParam("id") Long id) {
+    public Result delete(@RequestParam("id") Long id) {
         if (userService.deleteById(id))
-            return AjaxResult.success("删除成功");
-        else return AjaxResult.error("删除失败");
+            return Result.success("删除成功");
+        else return Result.error("删除失败");
     }
 
     @PostMapping("/add")
-    public AjaxResult add(@RequestBody User user) {
+    public Result add(@RequestBody User user) {
         user.setCreateTime(LocalDateTime.now());
         // 密码加密处理
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         int res = userService.insert(user);
         if (res > 0) {
-            return AjaxResult.success("添加成功");
+            return Result.success("添加成功");
         }
-        return AjaxResult.error("添加失败");
+        return Result.error("添加失败");
     }
 
     @PostMapping("/edit")
     public Result edit(@RequestBody User user) {
+
         int res = userService.update(user);
         if (res > 0) return Result.success("修改成功");
         return Result.error("修改失败");
