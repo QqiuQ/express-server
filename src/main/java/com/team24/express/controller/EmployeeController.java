@@ -11,10 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,8 +28,6 @@ import java.util.Objects;
 public class EmployeeController {
     @Resource
     EmployeeService employeeService;
-    @Resource
-    PasswordEncoder passwordEncoder;
 
     @Operation(summary = "获取员工信息", description = "根据员工ID获取员工信息",
             parameters = {
@@ -39,7 +35,7 @@ public class EmployeeController {
             },
             responses = @ApiResponse(description = "Employee封装在Result的data里",
                     content = @Content(schema = @Schema(allOf = {Result.class, Employee.class}))))
-    @GetMapping("/info")
+    @GetMapping()
     public Result info(@RequestParam("id") Long id) {
         Employee employee = employeeService.selectById(id);
         if (Objects.nonNull(employee)) {
@@ -73,9 +69,6 @@ public class EmployeeController {
             responses = @ApiResponse(description = "返回添加结果的消息"))
     @PostMapping("/add")
     public Result add(@RequestBody Employee employee) {
-        employee.setCreateTime(LocalDateTime.now());
-        // 密码加密处理
-        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
         if (employeeService.add(employee)) {
             return Result.success("添加成功");
         }
@@ -89,7 +82,6 @@ public class EmployeeController {
             responses = @ApiResponse(description = "返回编辑结果的消息"))
     @PostMapping("edit")
     public Result edit(@RequestBody Employee employee) {
-        employee.setUpdateTime(LocalDateTime.now());
         if (employeeService.edit(employee)) {
             return Result.success("修改成功");
         }

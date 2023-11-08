@@ -12,13 +12,22 @@ import java.util.List;
 public interface UserService {
     User selectByUsername(String username);
 
+    @Deprecated
     boolean deleteById(Long id);
 
+    @Deprecated
     int insert(User user);
 
+    @Deprecated
     int update(User user);
 
-    List<User> queryList(User user);
+    Boolean add(User user);
+
+    Boolean edit(User user);
+
+    Boolean delete(Long id);
+
+    List<User> selectUserList(User user);
 
     Boolean updateLastLoginTime(User user);
 

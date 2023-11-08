@@ -1,9 +1,6 @@
 package com.team24.express.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.team24.express.common.Result;
-import com.team24.express.entity.PageParams;
 import com.team24.express.entity.User;
 import com.team24.express.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,9 +31,6 @@ public class UserController {
     @Resource
     UserService userService;
 
-    @Resource
-    PasswordEncoder passwordEncoder;
-
     @Operation(summary = "用户列表", description = "按User实体属性，条件查询用户列表",
             parameters = {
                     @Parameter(name = "user", description = "前端返回的json实体对象", schema = @Schema(implementation = User.class)),
@@ -49,7 +43,7 @@ public class UserController {
     )
     @PostMapping()
     public Result list(@RequestBody User user) {
-        List<User> userList = userService.queryList(user);
+        List<User> userList = userService.selectUserList(user);
         Result result = Result.success("查询成功");
         result.setData(userList);
 
@@ -68,9 +62,9 @@ public class UserController {
     //    @PreAuthorize("hasAnyRole('SUPER_ADMIN','STATION_ADMIN')")
     @PostMapping("/delete")
     public Result delete(@RequestParam("id") Long id) {
-        if (userService.deleteById(id))
+        if (userService.delete(id))
             return Result.success("删除成功");
-        else return Result.error("删除失败");
+        return Result.error("删除失败");
     }
 
     @Operation(summary = "添加用户", description = "添加前端返回的用户",
@@ -83,12 +77,7 @@ public class UserController {
     )
     @PostMapping("/add")
     public Result add(@RequestBody User user) {
-        user.setCreateTime(LocalDateTime.now());
-        // 密码加密处理
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        int res = userService.insert(user);
-        if (res > 0) {
+        if (userService.add(user)) {
             return Result.success("添加成功");
         }
         return Result.error("添加失败");
@@ -105,8 +94,7 @@ public class UserController {
     @PostMapping("/edit")
     public Result edit(@RequestBody User user) {
         user.setUpdateTime(LocalDateTime.now());
-        int res = userService.update(user);
-        if (res > 0) return Result.success("修改成功");
+        if (userService.edit(user)) return Result.success("修改成功");
         return Result.error("修改失败");
     }
 
@@ -118,7 +106,7 @@ public class UserController {
                     @ApiResponse(description = "返回查结果消息和用户实体"),
             }
     )
-    @GetMapping("/info")
+    @GetMapping()
     public Result info(@RequestParam("id") Long id) {
         User user = userService.selectById(id);
         if (Objects.nonNull(user)) {

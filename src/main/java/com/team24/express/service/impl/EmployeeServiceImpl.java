@@ -7,6 +7,7 @@ import com.team24.express.entity.User;
 import com.team24.express.mapper.EmployeeMapper;
 import com.team24.express.service.EmployeeService;
 import jakarta.annotation.Resource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,8 @@ import java.util.Objects;
 public class EmployeeServiceImpl implements EmployeeService {
     @Resource
     EmployeeMapper employeeMapper;
+    @Resource
+    PasswordEncoder passwordEncoder;
 
     /**
      * QueryWrapper 写法
@@ -52,7 +55,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             wrapper.like("email", employee.getEmail());
         }
         if (employee.getAccountStatus() != null) {
-            wrapper.eq("accountStatus", employee.getAccountStatus());
+            wrapper.eq("account_status", employee.getAccountStatus());
         }
         if (employee.getCode() != null && !employee.getCode().isEmpty()) {
             wrapper.eq("code", employee.getCode());
@@ -73,7 +76,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             wrapper.eq("address", employee.getAddress());
         }
         if (employee.getHireDate() != null) {
-            wrapper.ge("hireDate", employee.getAddress());
+            wrapper.ge("hire_date", employee.getAddress());
         }
 
         return employeeMapper.selectList(wrapper);
@@ -81,12 +84,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Boolean add(Employee employee) {
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
         if (employeeMapper.insert(employee) > 0) return true;
         return false;
     }
 
     @Override
     public Boolean edit(Employee employee) {
+        employee.setUpdateTime(LocalDateTime.now());
         if (employeeMapper.updateById(employee) > 0) return true;
         return false;
     }

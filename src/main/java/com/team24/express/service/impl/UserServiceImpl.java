@@ -5,6 +5,7 @@ import com.team24.express.entity.User;
 import com.team24.express.mapper.UserMapper;
 import com.team24.express.service.UserService;
 import jakarta.annotation.Resource;
+import org.springframework.cglib.core.Local;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +52,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> queryList(User user) {
+    public Boolean add(User user) {
+        user.setCreateTime(LocalDateTime.now());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (userMapper.insert(user) > 0) return true;
+        return false;
+    }
+
+    @Override
+    public Boolean edit(User user) {
+        user.setUpdateTime(LocalDateTime.now());
+        if (userMapper.updateById(user) > 0) return true;
+        return false;
+    }
+
+    @Override
+    public Boolean delete(Long id) {
+        if (userMapper.deleteById(id) > 0) return true;
+        return false;
+    }
+
+    @Override
+    public List<User> selectUserList(User user) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         if (user == null) {
             return userMapper.selectList(wrapper);
@@ -75,7 +97,7 @@ public class UserServiceImpl implements UserService {
             wrapper.eq("birth", user.getBirthday());
         }
         if (user.getAccountStatus() != null) {
-            wrapper.eq("accountStatus", user.getAccountStatus());
+            wrapper.eq("account_status", user.getAccountStatus());
         }
 
 
