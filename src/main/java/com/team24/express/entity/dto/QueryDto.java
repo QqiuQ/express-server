@@ -8,6 +8,7 @@ import java.io.Serializable;
  * @date: 10/31/2023
  * 查询语句封装对象
  **/
+@Deprecated
 public class QueryDto implements Serializable {
     public Integer page;
     public Integer limit;

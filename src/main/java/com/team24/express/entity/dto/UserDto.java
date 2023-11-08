@@ -8,6 +8,7 @@ import lombok.Data;
  * @date: 10/10/2023
  **/
 @Data
+@Deprecated
 public class UserDto {
     private String username;
     private String password;

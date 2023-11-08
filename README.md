@@ -188,10 +188,186 @@ public final class RoleConst {
 
 # OpenAPI
 
-[示例]([SpringBoot集成Swagger3.0（详细） - 蚂蚁小哥 - 博客园](https://www.cnblogs.com/antLaddie/p/17418078.html#_label1_3:~:text=public%20class%20SwaggerOpenApiConfig%20%7B%0A%7D-,4%EF%BC%9A%E9%85%8D%E7%BD%AEAPI%E6%8E%A5%E5%8F%A3%E4%BF%A1%E6%81%AF%EF%BC%88%E6%B3%A8%E8%A7%A3%EF%BC%8C%E9%87%8D%E8%A6%81,-%EF%BC%89))
+[SpringBoot集成Swagger3.0（详细） - 蚂蚁小哥 - 博客园](https://www.cnblogs.com/antLaddie/p/17418078.html#_label1_3:~:text=public%20class%20SwaggerOpenApiConfig%20%7B%0A%7D-,4%EF%BC%9A%E9%85%8D%E7%BD%AEAPI%E6%8E%A5%E5%8F%A3%E4%BF%A1%E6%81%AF%EF%BC%88%E6%B3%A8%E8%A7%A3%EF%BC%8C%E9%87%8D%E8%A6%81,-%EF%BC%89)
 
 默认访问地址：http://localhost:8080/swagger-ui.html
 
 采用API注解的方式，使前端人员方便查看后端API接口，便于开发。
+
+# 统一返回接口：Result
+
+为了便于前后端接口统一，规定后端接口返回类为Result，格式如下：
+
+```json
+{
+    code: xxx,
+    message: xxx,
+    data: {
+        xxx
+    }
+}
+```
+
+例如，请求所有用户
+
+```json
+{
+    "code": 200,
+    "message": "查询成功",
+    "data": [
+        {
+            "id": "1721524122505601025",
+            "username": "vividbobo",
+            "password": "$2a$10$uQeh.YYXpgnXjDndwMajA./SgdkMA3GjgSJJ2rOlXVagK4GGKYUrO",
+            "avatar": null,
+            "email": "abc@163.com",
+            "accountStatus": 0,
+            "createTime": null, 
+            ...
+```
+
+# 后端编写流程
+
+以 RoleController 为例
+
+## 1 创建Mapper
+
+/mapper/RoleMapper.java
+
+Mybatis-Plus特性，创建的Mapper类直接继承BaseMapper\<Role\> 即可实现基本的CRUD
+
+```java
+@Mapper // 注意有注解
+public interface RoleMapper extends BaseMapper<Role> {
+    Role getRoleByRoleName(String name);
+}
+```
+
+## 2 创建Service
+
+/service/RoleService.java
+
+创建Service接口
+
+```java
+public interface RoleService {
+    boolean insert(Role role);
+
+    boolean edit(Role role);
+
+    boolean delete(Integer id);
+}
+
+```
+
+实现Service接口
+
+/service/impl/RoleServiceImpl.java
+
+```java
+@Service    // 注意有注解
+public class RoleServiceImpl implements RoleService {
+    @Resource
+    RoleMapper roleMapper;  // 注入依赖 Mapper
+
+    @Override
+    public boolean insert(Role role) {
+        if (roleMapper.insert(role) > 0) return true;
+        return false;
+    }
+
+    @Override
+    public boolean edit(Role role) {
+        if (roleMapper.updateById(role) > 0) return true;
+        return false;
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        if (roleMapper.deleteById(id) > 0) return true;
+        return false;
+    }
+}
+
+
+```
+
+## 3 创建Controller
+
+/controller/RoleController.java
+
+```java
+@Tag(name = "RoleController", description = "角色相关接口")   // ApiDoc相关
+@RestController
+@RequestMapping("/role")    // 请求地址
+public class RoleController {
+    @Resource
+    RoleService roleService;    // 依赖注入
+
+
+    /**
+     * @param role 角色实体
+     * @return
+     */
+    @Operation(summary = "角色添加", description = "添加前端返回的json对象实体",
+            parameters = {
+                    @Parameter(name = "role", description = "角色实体", schema = @Schema(implementation = Role.class))
+            },
+            responses = {
+                    @ApiResponse(description = "返回添加结果",
+                            content = @Content(schema = @Schema(implementation = Result.class)))
+            }
+    )
+    @PostMapping("/add")
+    public Result add(@RequestBody Role role) {
+        if (roleService.insert(role)) return Result.success("添加成功");
+        return Result.error("添加失败");
+    }
+```
+
+## 4 创建测试用例
+
+使用JUnit进行用例测试。
+
+再test/com/team24/.../ 创建 RoleTests，进行RoleMapper测试。并查看数据库该操作是否成功
+
+```java
+@SpringBootTest
+public class RoleTests {
+    @Resource
+    RoleMapper roleMapper;
+
+    @Test
+    void createRoles() {
+        String[] roleNames = new String[]{
+                RoleConst.USER,
+                RoleConst.EMPLOYEE,
+                RoleConst.DELIVERY_MAN,
+                RoleConst.STATION_ADMIN,
+                RoleConst.SUPER_ADMIN
+        };
+```
+
+## 5 PostMan测试
+
+使用PostMan测试控制器
+
+需要用户先登录
+
+```java
+127.0.0.1:8080/login?username=bobby%23EMPLOYEE&password=123456
+```
+
+将返回的HEADER的Authorization 复制
+
+![2b47b70c-88c7-4e0c-a29d-ae770b8c5bae](./images/2b47b70c-88c7-4e0c-a29d-ae770b8c5bae.png)
+
+新建一个窗口，填写测试url
+
+```java
+127.0.0.1:8080/role/add
+```
+
+![e5638e68-fece-4656-8ff7-5b976b43a1c5](./images/e5638e68-fece-4656-8ff7-5b976b43a1c5.png)
 
 
