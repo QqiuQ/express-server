@@ -8,6 +8,7 @@ import lombok.Data;
  * @author: Bobby
  * @date: 10/13/2023
  **/
+@Deprecated
 @Data
 @AllArgsConstructor
 public class EmployeeDto {

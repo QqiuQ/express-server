@@ -1,20 +1,15 @@
 package com.team24.express.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.team24.express.common.AjaxResult;
 import com.team24.express.entity.User;
-import com.team24.express.entity.dto.UserDto;
 import com.team24.express.mapper.UserMapper;
 import com.team24.express.service.UserService;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @className: UserServiceImpl
@@ -36,11 +31,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectOne(wrapper);
     }
 
-    @Override
-    public List<User> getUserList() {
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
-        return userMapper.selectList(wrapper);
-    }
 
     @Override
     public boolean deleteById(Long id) {
@@ -56,25 +46,8 @@ public class UserServiceImpl implements UserService {
     public int update(User user) {
         QueryWrapper<User> wrapper = new QueryWrapper<User>();
         wrapper.eq("id", user.getId());
-        wrapper.eq("username", user.getUsername());
+//        wrapper.eq("username", user.getUsername());
         return userMapper.update(user, wrapper);
-//        return userMapper.updateById(user);
-    }
-
-    @Override
-    public IPage<User> queryUsersByPage(Page<User> page, User user) {
-        QueryWrapper<User> queryWrapper = null;
-        if (!Objects.isNull(user)) {
-            queryWrapper = new QueryWrapper<>();
-            if (Objects.nonNull(user.getUsername()))
-                queryWrapper.like("username", user.getUsername());
-            if (Objects.nonNull(user.getEmail()))
-                queryWrapper.eq("email", user.getEmail());
-            if (Objects.nonNull(user.getPhone()))
-                queryWrapper.like("phone", user.getPhone());
-        }
-
-        return userMapper.selectPage(page, queryWrapper);
     }
 
     @Override
@@ -83,23 +56,43 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return userMapper.selectList(wrapper);
         }
-        if (user.getUsername() != null) {
+        if (user.getUsername() != null && !user.getUsername().isEmpty()) {
             wrapper.like("username", user.getUsername());
         }
-        if (user.getPhone() != null) {
-            wrapper.eq("phone", user.getPhone());
+        if (user.getPhone() != null && !user.getPhone().isEmpty()) {
+            wrapper.like("phone", user.getPhone());
         }
-        if (user.getNickname() != null) {
+        if (user.getNickname() != null && !user.getNickname().isEmpty()) {
             wrapper.like("nickname", user.getNickname());
         }
-        if (user.getEmail() != null) {
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
             wrapper.like("email", user.getEmail());
         }
         if (user.getSex() != null) {
             wrapper.eq("sex", user.getSex());
         }
+        if (user.getBirthday() != null) {
+            wrapper.eq("birth", user.getBirthday());
+        }
+        if (user.getAccountStatus() != null) {
+            wrapper.eq("accountStatus", user.getAccountStatus());
+        }
+
 
         return userMapper.selectList(wrapper);
+    }
+
+    @Override
+    public Boolean updateLastLoginTime(User user) {
+        user.setLastLoginTime(LocalDateTime.now());
+        if (userMapper.updateById(user) > 0) return true;
+        return false;
+    }
+
+    @Override
+    public User selectById(Long id) {
+
+        return userMapper.selectById(id);
     }
 
 }

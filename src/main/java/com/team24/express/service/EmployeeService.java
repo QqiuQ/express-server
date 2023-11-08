@@ -13,8 +13,15 @@ import java.util.List;
 public interface EmployeeService {
     Employee selectByUsername(String username);
 
+    Employee selectById(Long id);
 
-    Employee selectByCode(String code);
+    List<Employee> selectEmployeeList(Employee employee);
 
-    List<Employee> selectAll();
+    Boolean add(Employee employee);
+
+    Boolean edit(Employee employee);
+
+    Boolean delete(Long id);
+
+    Boolean updateLastLoginTime(Employee employee);
 }

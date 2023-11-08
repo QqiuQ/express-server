@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 /**
  * @className: RoleController
  * @author: Bobby
@@ -40,6 +42,7 @@ public class RoleController {
     )
     @PostMapping("/add")
     public Result add(@RequestBody Role role) {
+        role.setCreateTime(LocalDateTime.now());
         if (roleService.insert(role)) return Result.success("添加成功");
         return Result.error("添加失败");
     }
@@ -55,7 +58,9 @@ public class RoleController {
     )
     @PostMapping("/edit")
     public Result edit(@RequestBody Role role) {
-        return null;
+        role.setUpdateTime(LocalDateTime.now());
+        if (roleService.edit(role)) return Result.success("修改成功");
+        return Result.error("修改失败");
     }
 
     @Operation(summary = "角色删除", description = "根据前端传回的id删除角色",

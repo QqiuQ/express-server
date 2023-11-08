@@ -1,17 +1,11 @@
 package com.team24.express.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.team24.express.common.AjaxResult;
 import com.team24.express.common.Result;
 import com.team24.express.entity.PageParams;
 import com.team24.express.entity.User;
-import com.team24.express.entity.dto.QueryDto;
-import com.team24.express.mapper.UserMapper;
-import com.team24.express.mapper.AccountRoleMapper;
 import com.team24.express.service.UserService;
-import com.team24.express.util.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,23 +33,16 @@ import java.util.Objects;
 public class UserController {
     @Resource
     UserService userService;
-    @Resource
-    UserMapper userMapper;
 
     @Resource
     PasswordEncoder passwordEncoder;
-    @Resource
-    AccountRoleMapper accountRoleMapper;
 
-    @Resource
-    JwtUtils jwtUtils;
-
-    @Operation(summary = "用户列表(分页)", description = "以分页形式返回所有用户",
+    @Operation(summary = "用户列表", description = "按User实体属性，条件查询用户列表",
             parameters = {
-                    @Parameter(name = "user", description = "查询对象", schema = @Schema(implementation = User.class)),
+                    @Parameter(name = "user", description = "前端返回的json实体对象", schema = @Schema(implementation = User.class)),
             },
             responses = {
-                    @ApiResponse(description = "返回当前页的所有用户",
+                    @ApiResponse(description = "返回查询的所有用户",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(anyOf = {Result.class, User.class}))),
             }
@@ -70,36 +56,15 @@ public class UserController {
         return result;
     }
 
-    @RequestMapping(value = "/query", method = RequestMethod.POST)
-    public Result queryList(@RequestBody PageParams pageParams, @RequestBody User user) {
-        if (Objects.isNull(pageParams)) {
-            return Result.error("query为空");
-        }
-        Page<User> page = new Page<>(pageParams.getPage(), pageParams.getLimit());
-        IPage<User> userIPage = userService.queryUsersByPage(page, new User());
-        Result result = Result.success("查询成功");
-        result.setData(userIPage);
-        return result;
-    }
 
-    @Operation(summary = "用户信息", description = "根据用户名查看用户信息",
+    @Operation(summary = "删除用户", description = "按用户ID删除用户",
             parameters = {
-                    @Parameter(name = "username", description = "用户名"),
-            })
-    @ApiResponse(description = "若用户存在，则返回用户信息",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = User.class)))
-    @GetMapping("/{username}")
-    public Result userinfo(@PathVariable("username") String username) {
-        User user = userService.selectByUsername(username);
-        if (Objects.isNull(user)) {
-            return Result.error("该用户不存在");
-        }
-        Result result = Result.success();
-        result.setData(user);
-        return result;
-    }
-
+                    @Parameter(name = "id", schema = @Schema(implementation = Long.class)),
+            },
+            responses = {
+                    @ApiResponse(description = "返回删除结果消息"),
+            }
+    )
     //    @PreAuthorize("hasAnyRole('SUPER_ADMIN','STATION_ADMIN')")
     @PostMapping("/delete")
     public Result delete(@RequestParam("id") Long id) {
@@ -108,6 +73,14 @@ public class UserController {
         else return Result.error("删除失败");
     }
 
+    @Operation(summary = "添加用户", description = "添加前端返回的用户",
+            parameters = {
+                    @Parameter(name = "user", schema = @Schema(implementation = User.class)),
+            },
+            responses = {
+                    @ApiResponse(description = "返回添加结果消息"),
+            }
+    )
     @PostMapping("/add")
     public Result add(@RequestBody User user) {
         user.setCreateTime(LocalDateTime.now());
@@ -121,12 +94,39 @@ public class UserController {
         return Result.error("添加失败");
     }
 
+    @Operation(summary = "编辑用户", description = "编辑前端返回的用户",
+            parameters = {
+                    @Parameter(name = "user", schema = @Schema(implementation = User.class)),
+            },
+            responses = {
+                    @ApiResponse(description = "返回编辑结果消息"),
+            }
+    )
     @PostMapping("/edit")
     public Result edit(@RequestBody User user) {
-
+        user.setUpdateTime(LocalDateTime.now());
         int res = userService.update(user);
         if (res > 0) return Result.success("修改成功");
         return Result.error("修改失败");
+    }
+
+    @Operation(summary = "查看用户信息", description = "根据ID查找并返回用户",
+            parameters = {
+                    @Parameter(name = "id", schema = @Schema(implementation = Long.class)),
+            },
+            responses = {
+                    @ApiResponse(description = "返回查结果消息和用户实体"),
+            }
+    )
+    @GetMapping("/info")
+    public Result info(@RequestParam("id") Long id) {
+        User user = userService.selectById(id);
+        if (Objects.nonNull(user)) {
+            Result result = Result.success("查找成功");
+            result.setData(user);
+            return result;
+        }
+        return Result.error("查找失败");
     }
 
 }
