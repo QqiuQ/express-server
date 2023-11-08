@@ -23,7 +23,7 @@ import java.util.Objects;
  * @author: Bobby
  * @date: 10/14/2023
  **/
-@Tag(name = "UserController", description = "用户相关接口")
+    @Tag(name = "UserController", description = "用户相关接口")
 @Slf4j
 @RestController
 @RequestMapping("/user")
