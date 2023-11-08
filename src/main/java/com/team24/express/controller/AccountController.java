@@ -4,8 +4,9 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.team24.express.common.AccountConst;
 import com.team24.express.common.Result;
 import com.team24.express.entity.Account;
-import com.team24.express.service.EmployeeService;
+import com.team24.express.entity.User;
 import com.team24.express.service.AccountRoleService;
+import com.team24.express.service.EmployeeService;
 import com.team24.express.service.UserService;
 import com.team24.express.util.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,13 +15,15 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -32,9 +35,8 @@ import java.util.Map;
  * @author: Bobby
  * @date: 10/13/2023
  **/
-@Tag(name = "AccountController", description = "账户相关(用户、员工)")
+@Tag(name = "AccountController", description = "账户相关(用户、员工)、用户注册")
 @RestController()
-@RequestMapping("/account")
 public class AccountController {
 
     /**
@@ -75,7 +77,7 @@ public class AccountController {
                             @ExtensionProperty(name = "roles", value = "[ROLE_USER, ROLE_SUPER_ADMIN]")}))
             }
     )
-    @GetMapping("/info")
+    @GetMapping("/account/info")
     public Result info(String accountType, String token) {
 
         if (token == null || token.equals("")) {
@@ -110,5 +112,21 @@ public class AccountController {
                 return result;
             }
         }
+    }
+
+    @Operation(summary = "用户注册", description = "根据前端返回的对象添加用户",
+            parameters = {
+                    @Parameter(name = "user", schema = @Schema(implementation = User.class)),
+            },
+            responses = {
+                    @ApiResponse(description = "返回注册结果消息"),
+            }
+    )
+    @PostMapping("/register")
+    public Result userRegister(@RequestBody User user) {
+        if (userService.add(user)) {
+            return Result.success("注册成功");
+        }
+        return Result.error("注册失败");
     }
 }

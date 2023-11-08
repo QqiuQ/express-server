@@ -1,6 +1,7 @@
 package com.team24.express.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
@@ -16,6 +17,8 @@ import java.time.LocalDateTime;
 @Data
 @TableName("order")
 public class Order {
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
     private String expressNumber;
     private Integer status; //运单状态(0:已取消; 1:已完成; 2:进行中)

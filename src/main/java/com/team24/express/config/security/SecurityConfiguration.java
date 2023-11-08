@@ -9,6 +9,8 @@ import com.team24.express.config.security.filter.RequestLogFilter;
 import com.team24.express.config.security.userdetails.AccountDetailService;
 import com.team24.express.config.security.userdetails.AccountDetails;
 import com.team24.express.entity.Account;
+import com.team24.express.entity.Employee;
+import com.team24.express.entity.User;
 import com.team24.express.service.EmployeeService;
 import com.team24.express.service.UserService;
 import com.team24.express.util.JwtUtils;
@@ -279,6 +281,13 @@ public class SecurityConfiguration {
             data.put("expire", utils.expireTime());
             data.put("accountType", authUser.getAccountType());
             result.setData(data);
+            // 登录成功
+            if (authUser.getAccountType().equals(AccountConst.TYPE_USER)) {
+                userService.updateLastLoginTime((User) account);
+            } else if (authUser.getAccountType().equals(AccountConst.TYPE_EMPLOYEE)) {
+                employeeService.updateLastLoginTime((Employee) account);
+            }
+
             writer.write(result.asJsonString());
         }
     }

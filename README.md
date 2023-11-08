@@ -5,7 +5,25 @@ Springboot3 + Mybatis Plus + Security6 + JWT 一个简化的Security+JWT的登�
 
 # 项目环境
 
-JDK17及以上
+- JDK17及以上
+
+- Springboot 3
+
+- idea 2021.3
+
+项目运行前先
+
+- 配置项目JDK：File->project structure
+
+![80f2f06f-7540-466b-acd3-fbfe9dc4b7a3](./images/80f2f06f-7540-466b-acd3-fbfe9dc4b7a3.png)
+
+JDK17以上即可,
+
+language level 16以上（如果没有16及以上，更新下idea）
+
+- 导入数据库：sql/expressxxx.sql (创建数据库即表都在一个sql文件里)或 sql/expressxxx/ tablexxx.sql (分别创建表的sql文件)
+
+- 启动redis：群文件 Redis-7.0.14-xxx.tar.gz 解压 并运行 redis-server.exe
 
 # 目录结构说明
 
@@ -132,99 +150,224 @@ public class EmployeeMapperTests {
 }
 ```
 
-# [Spring Security 6](https://docs.spring.io/spring-security/reference/index.html)
+# Security 角色认证
 
-Spring Security 是 Spring 组织提供的一个**开源安全框架**，基于 Spring 开发。目前最新版为，需要JDK 17及以上。
-
-Security 过滤原理
-
-## 双端登录（2 login pages ）
-
-同一套后端，两个表(user, employee)，两个登录页面。
-
-## 认证与权限
-
-在很多情况下，系统将用户分为两个角色：普通用户和管理员。普通用户对某一操作只有查看权限，而管理员则拥有修改权限。
-
-在本项目中，构建了如下应用场景：
-
-### 角色认证
-
-基于角色的访问认证，在方法上定义@PreAuthorize("hasRole('ROLE_USER')")，则该请求要求登录用户有ROLE_USER的角色。
-
-### 权限验证
-
-通过自定义 PermissionEvaluator 进行权限验证。
-
-这里只重写了一个方法
+预定义了 5 中角色，见common/RoleConst.java
 
 ```java
-public class EmployeePermissionEvaluator implements PermissionEvaluator {
+public final class RoleConst {
+    public final static String SUPER_ADMIN = "ROLE_SUPER_ADMIN";    // 超级管理员
+    public final static String STATION_ADMIN = "ROLE_STATION_ADMIN";    // 站点管理员
+    public final static String DELIVERY_MAN = "ROLE_DELIVERY_MAN";  // 快递员
+    public final static String EMPLOYEE = "ROLE_EMPLOYEE";  // 员工
+    public static final String USER = "ROLE_USER";  //用户
+}
+```
 
-    @Resource
-    PermissionMapper permissionMapper;
+## 使用
 
-    /**
-     * eg:  user/list
-     * user/edit/{id}
-     * user/insert
-     * user/delete/{id}
-     * 定义这个权限的目的是，使得授权进一步具体化。举个不太恰当的例子，例如，角色为站点管理员拥有 user/list权限，而没有insert, eidt和delete权限
-     * 而 超级管理员 拥有上述的所有权限。在具体方法上可添加注解 @PreAuthorize("hasPermission(xxx,xxx)")
-     *
-     * @param authentication     会自动传过来当前登录的用户
-     * @param targetDomainObject 目标域，例如上面url中的 user
-     * @param permission         权限：例如上面中的 edit
-     * @return
-     * @PreAuthorize("hasPermission('user','edit')")
-     * @RequestMapping("/user/{id}") public AjaxResult edit(@PathVariable("id") Long id){
-     * ...
-     * }
-     * <p>
-     * 然后在下面的方法内验证，authentication 是否拥有域为user的edit权限
-     * <p>
-     * 因此，稍稍复杂化一些，同时也需要将角色对特定域所拥有的权限也存入数据库
-     * <p>
-     * Quesiton: 如何读取这些权限呢? 因为 authentication 只拥有UserDetails的信息
-     * 1. 根据角色从数据库读取权限? 相应的就要引入 PermissionService
-     * 2.
-     */
-
-    @Override
-    public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-        // 根据 roleName 获取相应的 Permissionso
-        for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
-            String roleName = grantedAuthority.getAuthority();
-            List<PermissionDto> permissionDtoList = permissionMapper.getPermissionsByRoleName(roleName);
-            for (PermissionDto pDto : permissionDtoList) {
-                if (pDto.getDomain().equals(targetDomainObject) && pDto.getPermission().equals(permission))
-                    return true;
-            }
-        }
-
-        return false;
+```java
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','STATION_ADMIN')")
+    @PostMapping("/delete")
+    public AjaxResult delete(@RequestParam("id") Long id) {
+        if (userService.deleteById(id))
+            return AjaxResult.success("删除成功");
+        else return AjaxResult.error("删除失败");
     }
+```
 
-    @Override
-    public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
-        return false;
+使用@PreAuthorize("hasAnyRole('SUPER_ADMIN','STATION_ADMIN')")注解。
+
+其中@hasAnyRole() 会在传入的字符串前加前缀 'ROLE_'，而@hasRole() 则不会。
+
+因此若判断是否具有权限ROLE_SUPER_ADMIN，采用@hasAnyRole('SUPER_ADMIN')，而采用@hasRole('ROLE_SUPER_ADMIN')
+
+
+
+使用该注解实现了在后端进行权限验证和拦截。
+
+# OpenAPI
+
+[SpringBoot集成Swagger3.0（详细） - 蚂蚁小哥 - 博客园](https://www.cnblogs.com/antLaddie/p/17418078.html#_label1_3:~:text=public%20class%20SwaggerOpenApiConfig%20%7B%0A%7D-,4%EF%BC%9A%E9%85%8D%E7%BD%AEAPI%E6%8E%A5%E5%8F%A3%E4%BF%A1%E6%81%AF%EF%BC%88%E6%B3%A8%E8%A7%A3%EF%BC%8C%E9%87%8D%E8%A6%81,-%EF%BC%89)
+
+默认访问地址：http://localhost:8080/swagger-ui.html
+
+采用API注解的方式，使前端人员方便查看后端API接口，便于开发。
+
+# 统一返回接口：Result
+
+为了便于前后端接口统一，规定后端接口返回类为Result，格式如下：
+
+```json
+{
+    code: xxx,
+    message: xxx,
+    data: {
+        xxx
     }
 }
 ```
 
-在方法上使用注解 @PreAuthorize("hasPermission('user','delete')")
+例如，请求所有用户
 
-@PreAuthorize 指的是在进入该方法前，进行hasPermission的权限校验
+```json
+{
+    "code": 200,
+    "message": "查询成功",
+    "data": [
+        {
+            "id": "1721524122505601025",
+            "username": "vividbobo",
+            "password": "$2a$10$uQeh.YYXpgnXjDndwMajA./SgdkMA3GjgSJJ2rOlXVagK4GGKYUrO",
+            "avatar": null,
+            "email": "abc@163.com",
+            "accountStatus": 0,
+            "createTime": null, 
+            ...
+```
 
-#### @hasPermission测试
+# 后端编写流程
 
-* ROLE_SUPER_ADMIN角色，对域"user"拥有"read","add","delete","edit" 权限
-* ROLE_NORMAL_EMPLOYEE角色，对域"user"只拥有"read"权限
+以 RoleController 为例
 
-![4e8ddceb-e4ba-4770-85a1-66af4a1c0c7c](./images/4e8ddceb-e4ba-4770-85a1-66af4a1c0c7c.png)
+## 1 创建Mapper
 
-将登录结果的token复制到请求的Header中，由于ROLE_NORMAL_EMPLOYEE没有user:delete的权限，因此访问拒绝
+/mapper/RoleMapper.java
 
-![70f2c38e-00a6-4d5a-91ce-75b978fef7f3](./images/70f2c38e-00a6-4d5a-91ce-75b978fef7f3.png)
+Mybatis-Plus特性，创建的Mapper类直接继承BaseMapper\<Role\> 即可实现基本的CRUD
+
+```java
+@Mapper // 注意有注解
+public interface RoleMapper extends BaseMapper<Role> {
+    Role getRoleByRoleName(String name);
+}
+```
+
+## 2 创建Service
+
+/service/RoleService.java
+
+创建Service接口
+
+```java
+public interface RoleService {
+    boolean insert(Role role);
+
+    boolean edit(Role role);
+
+    boolean delete(Integer id);
+}
+
+```
+
+实现Service接口
+
+/service/impl/RoleServiceImpl.java
+
+```java
+@Service    // 注意有注解
+public class RoleServiceImpl implements RoleService {
+    @Resource
+    RoleMapper roleMapper;  // 注入依赖 Mapper
+
+    @Override
+    public boolean insert(Role role) {
+        if (roleMapper.insert(role) > 0) return true;
+        return false;
+    }
+
+    @Override
+    public boolean edit(Role role) {
+        if (roleMapper.updateById(role) > 0) return true;
+        return false;
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        if (roleMapper.deleteById(id) > 0) return true;
+        return false;
+    }
+}
+
+
+```
+
+## 3 创建Controller
+
+/controller/RoleController.java
+
+```java
+@Tag(name = "RoleController", description = "角色相关接口")   // ApiDoc相关
+@RestController
+@RequestMapping("/role")    // 请求地址
+public class RoleController {
+    @Resource
+    RoleService roleService;    // 依赖注入
+
+
+    /**
+     * @param role 角色实体
+     * @return
+     */
+    @Operation(summary = "角色添加", description = "添加前端返回的json对象实体",
+            parameters = {
+                    @Parameter(name = "role", description = "角色实体", schema = @Schema(implementation = Role.class))
+            },
+            responses = {
+                    @ApiResponse(description = "返回添加结果",
+                            content = @Content(schema = @Schema(implementation = Result.class)))
+            }
+    )
+    @PostMapping("/add")
+    public Result add(@RequestBody Role role) {
+        if (roleService.insert(role)) return Result.success("添加成功");
+        return Result.error("添加失败");
+    }
+```
+
+## 4 创建测试用例
+
+使用JUnit进行用例测试。
+
+再test/com/team24/.../ 创建 RoleTests，进行RoleMapper测试。并查看数据库该操作是否成功
+
+```java
+@SpringBootTest
+public class RoleTests {
+    @Resource
+    RoleMapper roleMapper;
+
+    @Test
+    void createRoles() {
+        String[] roleNames = new String[]{
+                RoleConst.USER,
+                RoleConst.EMPLOYEE,
+                RoleConst.DELIVERY_MAN,
+                RoleConst.STATION_ADMIN,
+                RoleConst.SUPER_ADMIN
+        };
+```
+
+## 5 PostMan测试
+
+使用PostMan测试控制器
+
+需要用户先登录
+
+```java
+127.0.0.1:8080/login?username=bobby%23EMPLOYEE&password=123456
+```
+
+将返回的HEADER的Authorization 复制
+
+![2b47b70c-88c7-4e0c-a29d-ae770b8c5bae](./images/2b47b70c-88c7-4e0c-a29d-ae770b8c5bae.png)
+
+新建一个窗口，填写测试url
+
+```java
+127.0.0.1:8080/role/add
+```
+
+![e5638e68-fece-4656-8ff7-5b976b43a1c5](./images/e5638e68-fece-4656-8ff7-5b976b43a1c5.png)
 
 
