@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
  * @className: SwaggerConfig
  * @author: Bobby
  * @date: 10/30/2023
+ * api文档配置
+ * 默认访问地址: http://localhost:8080/swagger-ui.html
  **/
 @Configuration
 public class SwaggerConfig {

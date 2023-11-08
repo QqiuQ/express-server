@@ -1,6 +1,7 @@
 package com.team24.express.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
@@ -15,6 +16,7 @@ import lombok.Data;
 @Data
 @TableName("account_role")
 public class AccountRole {
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long accountId;
     private Integer roleId;
     private String type;    // 员工还是普通用户

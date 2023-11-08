@@ -1,5 +1,6 @@
 package com.team24.express.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
@@ -15,6 +16,8 @@ import java.time.LocalDateTime;
 @Schema(name = "Account", title = "账户类", description = "账户类属性，是User类和Employee类的基类")
 @Data
 public class Account {
+    // 解决因id过大转为json后，精度丢失，导致前后端id不一致的问题
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
     private String username;
     private String password;

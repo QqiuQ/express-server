@@ -25,7 +25,6 @@ public interface UserService {
 
     int update(User user);
 
-    AjaxResult myLogin(UserDto userDto, HttpServletResponse response);
 
     IPage<User> queryUsersByPage(Page<User> page, User user);
 

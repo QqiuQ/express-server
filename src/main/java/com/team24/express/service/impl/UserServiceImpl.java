@@ -54,20 +54,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int update(User user) {
-        return userMapper.updateById(user);
-    }
-
-    @Override
-    public AjaxResult myLogin(UserDto userDto, HttpServletResponse response) {
-        User user = userMapper.selectByUsername(userDto.getUsername());
-
-        if (Objects.isNull(user)) {
-            return AjaxResult.error("用户不存在");
-        }
-        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-            return AjaxResult.error("密码错误");
-        }
-        return AjaxResult.success("登录成功");
+        QueryWrapper<User> wrapper = new QueryWrapper<User>();
+        wrapper.eq("id", user.getId());
+        wrapper.eq("username", user.getUsername());
+        return userMapper.update(user, wrapper);
+//        return userMapper.updateById(user);
     }
 
     @Override
@@ -97,6 +88,15 @@ public class UserServiceImpl implements UserService {
         }
         if (user.getPhone() != null) {
             wrapper.eq("phone", user.getPhone());
+        }
+        if (user.getNickname() != null) {
+            wrapper.like("nickname", user.getNickname());
+        }
+        if (user.getEmail() != null) {
+            wrapper.like("email", user.getEmail());
+        }
+        if (user.getSex() != null) {
+            wrapper.eq("sex", user.getSex());
         }
 
         return userMapper.selectList(wrapper);

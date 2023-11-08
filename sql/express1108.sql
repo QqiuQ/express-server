@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `express` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `express`;
 -- MySQL dump 10.13  Distrib 8.0.31, for Win64 (x86_64)
 --
 -- Host: localhost    Database: express
@@ -131,7 +129,7 @@ CREATE TABLE `order` (
   `recipient_name` varchar(20) NOT NULL COMMENT '收件人\n',
   `recipient_phone` varchar(11) NOT NULL COMMENT '收件电话\n',
   `recipient_address` varchar(200) NOT NULL COMMENT '收件地址\n',
-  `express_status` int DEFAULT NULL COMMENT '物流状态(0:异常; 1:已代收; 2:已揽收; 3:运送中; 4:派送中; 5:待取件; 6:派送中; 7:已签收)\n',
+  `express_status` int DEFAULT '1' COMMENT '物流状态(0:异常;1:揽收中; 2:运输中; 3: 派送中; 4: 到达网点; 5:已签收)',
   `package_weight` int DEFAULT NULL COMMENT '包裹重量(g)\n',
   `package_length` int DEFAULT NULL COMMENT '包裹长度\n(cm)',
   `package_width` int DEFAULT NULL COMMENT '包裹宽度(cm)\n',
@@ -222,6 +220,61 @@ LOCK TABLES `station` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `station_employee`
+--
+
+DROP TABLE IF EXISTS `station_employee`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `station_employee` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID\n',
+  `station_id` bigint NOT NULL COMMENT '网点ID',
+  `employee_id` bigint NOT NULL COMMENT '员工ID',
+  `position` varchar(40) DEFAULT '员工' COMMENT '职位（网点快递员、工作人员...）',
+  `status` int DEFAULT '0' COMMENT '员工状态(0:在职; 1:离职; 2:休假)  p.s 与employee表重复',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='站点员工表';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `station_employee`
+--
+
+LOCK TABLES `station_employee` WRITE;
+/*!40000 ALTER TABLE `station_employee` DISABLE KEYS */;
+/*!40000 ALTER TABLE `station_employee` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `station_order`
+--
+
+DROP TABLE IF EXISTS `station_order`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `station_order` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `order_id` bigint NOT NULL COMMENT '订单ID',
+  `station_id` bigint NOT NULL COMMENT '网点ID',
+  `status` int DEFAULT '0' COMMENT '网点运单状态（0:待取件; 1:已出库; 2:异常）',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='站点运单表';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `station_order`
+--
+
+LOCK TABLES `station_order` WRITE;
+/*!40000 ALTER TABLE `station_order` DISABLE KEYS */;
+/*!40000 ALTER TABLE `station_order` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `user`
 --
 
@@ -253,7 +306,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1721524122505601025,'vividbobo','$2a$10$uQeh.YYXpgnXjDndwMajA./SgdkMA3GjgSJJ2rOlXVagK4GGKYUrO',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524219918319618,'user#0','$2a$10$7J/0ljGvi6BKjWjL4YburutKVeKYnhydDv5ML35bjm03E8H/nB4A6',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221180805122,'user#1','$2a$10$9.TWFKb8DFIwkFMIqA1y7uvoIutjenuoxo/UxMnQczM1iaO.xih4W',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221180805123,'user#2','$2a$10$ZbgdHqmkckgQ6fE/NDRmTOZGAfSOJPsIFEHwCPtMcvWerzudlX0Si',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221180805124,'user#3','$2a$10$aiFGi2y9Z1TAhc9u6in8oeY7MEuAHXDnFFyqLP4Wwzv2SB2CEwE9W',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221180805125,'user#4','$2a$10$8po597NN8WHOA7F.bp3Jq.n8E4oBNgfwLzi0QygoAmbzNelVPoXhK',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221243719682,'user#5','$2a$10$tcJHE4rdI5uBow2tpVy72OanAQsCvMyIHkDHJK3PSbW.tmGZuurWW',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221243719683,'user#6','$2a$10$WB3eJZb4pQGWEuff48M.OeDPDxrqVbMtRtonqogEHPBwBwquHvd8y',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221243719684,'user#7','$2a$10$WIvVpRQVtvKm2bG/9GoFse6DevUSo3MD95X/jtKEqh5Jb2Ejoae2.',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221306634242,'user#8','$2a$10$5YD132DlwXPoplWwaOF3cuhf5jQJhGduQE8oYJNa0UEPpuvje1X7e',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221306634243,'user#9','$2a$10$6gLD.yY71DAgAujJmEyMm.kVOkx6jMg9Pd0dbQpU1Ms3/YiiByCmi',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL);
+INSERT INTO `user` VALUES (1721524122505601025,'vividbobo','$2a$10$uQeh.YYXpgnXjDndwMajA./SgdkMA3GjgSJJ2rOlXVagK4GGKYUrO',NULL,'abc@163.com',0,NULL,NULL,NULL,'vividbobby',1,'178888',NULL,NULL),(1721524221180805122,'user#1','$2a$10$9.TWFKb8DFIwkFMIqA1y7uvoIutjenuoxo/UxMnQczM1iaO.xih4W',NULL,NULL,0,NULL,NULL,NULL,'user111',1,NULL,NULL,NULL),(1721524221180805123,'user#2','$2a$10$ZbgdHqmkckgQ6fE/NDRmTOZGAfSOJPsIFEHwCPtMcvWerzudlX0Si',NULL,NULL,0,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL),(1721524221180805124,'user#3','$2a$10$aiFGi2y9Z1TAhc9u6in8oeY7MEuAHXDnFFyqLP4Wwzv2SB2CEwE9W',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221180805125,'user#4','$2a$10$8po597NN8WHOA7F.bp3Jq.n8E4oBNgfwLzi0QygoAmbzNelVPoXhK',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221243719682,'user#5','$2a$10$tcJHE4rdI5uBow2tpVy72OanAQsCvMyIHkDHJK3PSbW.tmGZuurWW',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221243719683,'user#6','$2a$10$WB3eJZb4pQGWEuff48M.OeDPDxrqVbMtRtonqogEHPBwBwquHvd8y',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221243719684,'user#7','$2a$10$WIvVpRQVtvKm2bG/9GoFse6DevUSo3MD95X/jtKEqh5Jb2Ejoae2.',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221306634242,'user#8','$2a$10$5YD132DlwXPoplWwaOF3cuhf5jQJhGduQE8oYJNa0UEPpuvje1X7e',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL),(1721524221306634243,'user#9','$2a$10$6gLD.yY71DAgAujJmEyMm.kVOkx6jMg9Pd0dbQpU1Ms3/YiiByCmi',NULL,NULL,0,NULL,NULL,NULL,NULL,2,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -266,4 +319,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-07 14:28:49
+-- Dump completed on 2023-11-08 12:01:27

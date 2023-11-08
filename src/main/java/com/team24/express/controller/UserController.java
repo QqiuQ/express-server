@@ -1,5 +1,6 @@
 package com.team24.express.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.team24.express.common.AjaxResult;
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,7 +53,7 @@ public class UserController {
 
     @Operation(summary = "用户列表(分页)", description = "以分页形式返回所有用户",
             parameters = {
-                    @Parameter(name = "query", description = "查询对象", schema = @Schema(implementation = QueryDto.class)),
+                    @Parameter(name = "user", description = "查询对象", schema = @Schema(implementation = User.class)),
             },
             responses = {
                     @ApiResponse(description = "返回当前页的所有用户",
@@ -64,6 +66,12 @@ public class UserController {
         List<User> userList = userService.queryList(user);
         Result result = Result.success("查询成功");
         result.setData(userList);
+
+//        Page page = new Page(5, 10);   // 第5页，每页10条数据
+//        QueryWrapper<User> wrapper = new QueryWrapper<User>();
+//        IPage<User> iPage = userMapper.selectPage(page, wrapper);  //IPage<User> ==> List<User>
+//
+
         return result;
     }
 
@@ -95,8 +103,9 @@ public class UserController {
         return AjaxResult.success(user);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public AjaxResult delete(@PathVariable("id") Long id) {
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','STATION_ADMIN')")
+    @PostMapping("/delete")
+    public AjaxResult delete(@RequestParam("id") Long id) {
         if (userService.deleteById(id))
             return AjaxResult.success("删除成功");
         else return AjaxResult.error("删除失败");
@@ -115,11 +124,11 @@ public class UserController {
         return AjaxResult.error("添加失败");
     }
 
-    @PutMapping("/edit")
-    public AjaxResult edit(@RequestBody User user) {
+    @PostMapping("/edit")
+    public Result edit(@RequestBody User user) {
         int res = userService.update(user);
-        if (res > 0) return AjaxResult.success("修改成功");
-        return AjaxResult.error("修改失败");
+        if (res > 0) return Result.success("修改成功");
+        return Result.error("修改失败");
     }
 
 }
