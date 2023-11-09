@@ -2,18 +2,7 @@ package com.team24.express.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.team24.express.entity.Station;
-import com.team24.express.entity.User;
-import com.team24.express.mapper.StationMapper;
-import com.team24.express.service.StationService;
-import jakarta.annotation.Resource;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import com.team24.express.entity.Employee;
-import com.team24.express.entity.Order;
-import com.team24.express.entity.StationEmployee;
-import com.team24.express.entity.StationOrder;
+import com.team24.express.entity.*;
 import com.team24.express.mapper.StationMapper;
 import com.team24.express.service.StaitonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +13,13 @@ import java.util.List;
 
 @Service
 public class StationServiceImpl implements StaitonService {
-  // jjw code
+    // jjw code
 
     @Autowired
     StationMapper stationMapper;
 
     @Override
-    public List<Order> selectPackages(Order order) {
+    public List<Delivery> selectPackages(Delivery order) {
         return stationMapper.selectPackagesByConditions(order);
     }
 
@@ -54,15 +43,15 @@ public class StationServiceImpl implements StaitonService {
 
     @Override
     public List<StationEmployee> searchCourier(Integer status, Long id) {
-        return stationMapper.selectCourierByCondition(status,id);
+        return stationMapper.selectCourierByCondition(status, id);
     }
 
     @Override
     public void deleteCourier(Long id) {
-        stationMapper.deleteById(id);
+        stationMapper.deleteEmployeeById(id);
     }
-  
-  // zgd code
+
+    // zgd code
 
     @Override
     public Station selectByStationname(String username) {
@@ -81,9 +70,12 @@ public class StationServiceImpl implements StaitonService {
     public boolean deleteById(Long id) {
         return stationMapper.deleteById(id) > 0;
     }
+
+    @Override
     public boolean deleteBatchIds(List<Long> ids) {
         return stationMapper.deleteBatchIds(ids) > 0;
     }
+
     @Override
     public int insert(Station station) {
         return stationMapper.insert(station);
