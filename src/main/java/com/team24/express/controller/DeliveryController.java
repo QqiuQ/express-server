@@ -37,7 +37,7 @@ public class DeliveryController {
             }
     )
     @PostMapping("/add")
-    public Result add(Delivery delivery) {
+    public Result add(@RequestBody Delivery delivery) {
         if (deliveryService.add(delivery)) return Result.success("添加成功");
         return Result.error("添加失败");
     }

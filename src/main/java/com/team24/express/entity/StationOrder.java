@@ -19,7 +19,11 @@ import java.time.LocalDateTime;
 public class StationOrder {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+
     private Long orderId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+
     private Long stationId;
     private Integer status;
     private LocalDateTime createTime;

@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 public class Address {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long userId;
     private String recipientName;
     private String phone;
