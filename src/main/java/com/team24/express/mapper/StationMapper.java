@@ -1,6 +1,7 @@
 package com.team24.express.mapper;
 
 
+
 import com.team24.express.entity.Order;
 import com.team24.express.entity.StationEmployee;
 import com.team24.express.entity.StationOrder;
@@ -9,10 +10,25 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Update;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.team24.express.entity.Station;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+
 import java.util.List;
 
+
 @Mapper
-public interface StationMapper {
+
+public interface StationMapper extends BaseMapper<Station> {
+    // zgd code
+    @Select("select * from station")
+    List<Station> selectList();
+  
+    // jjw code
     /**
      * 条件查询包裹
      * @param order
@@ -57,4 +73,7 @@ public interface StationMapper {
      */
     @Delete("delete from express.station_employee where employee_id = #{id}")
     void deleteById(Long id);
+
+
+
 }

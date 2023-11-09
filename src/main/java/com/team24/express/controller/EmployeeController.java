@@ -21,7 +21,7 @@ import java.util.Objects;
  * @author: Bobby
  * @date: 10/14/2023
  **/
-@Tag(name = "EmployeeController")
+@Tag(name = "EmployeeController", description = "员工控制器")
 @Slf4j
 @RestController
 @RequestMapping("/employee")

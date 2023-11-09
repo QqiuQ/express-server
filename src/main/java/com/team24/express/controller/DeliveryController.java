@@ -5,6 +5,7 @@ import com.team24.express.entity.Order;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -19,6 +20,11 @@ public class DeliveryController {
 
     @PostMapping("/add")
     public Result add(Order order) {
+        return null;
+    }
+
+    @PostMapping("/price")
+    public Result price(@RequestParam("code1") String code1, @RequestParam("code2") String code2) {
         return null;
     }
 
