@@ -131,7 +131,9 @@ public class DeliveryController {
     )
     @PostMapping("/confirm")
     public Result confirmReceive(@RequestParam("id") Long id) {
-        if (deliveryService.updateStatus(id, Delivery.STATUS_FINISH)) return Result.success("确认成功");
+        if (deliveryService.updateStatus(id, Delivery.STATUS_FINISH))
+            if (deliveryService.updateExpressStatus(id, Delivery.EXPRESS_STATUS_SIGNED))
+                return Result.success("确认成功");
         return Result.error("确认失败");
     }
 
