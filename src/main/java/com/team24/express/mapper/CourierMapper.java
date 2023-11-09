@@ -11,6 +11,7 @@ public interface CourierMapper {
      * @param id
      * @param condition
      */
-    @Update("update express.`order` set express_status = #{condition} where id = #{id}")
+//    @Update("update express.`order` set express_status = #{condition} where id = #{id}")
+    @Update("update delivery set express_status = #{condition} where id = #{id}")
     void updateConditionById(Long id, Integer condition);
 }

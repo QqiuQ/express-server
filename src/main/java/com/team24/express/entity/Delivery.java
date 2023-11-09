@@ -8,16 +8,14 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * @className: Order
+ * @className: Delivery
  * @author: Bobby
- * @date: 11/6/2023
+ * @date: 11/9/2023
  **/
-@Schema(name = "Order", title = "订单表", description = "订单类属性")
+@Schema(name = "Delivery", title = "订单表", description = "订单类属性")
 @Data
-@TableName("order")
-@Deprecated
-public class Order {
-
+@TableName("delivery")
+public class Delivery {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
     private String expressNumber;
@@ -43,4 +41,16 @@ public class Order {
     private String recipientSignature;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+
+
+    public static final Integer STATUS_CANCEL = 0;  // 取消
+    public static final Integer STATUS_FINISH = 1;  // 完成
+    public static final Integer STATUS_PROGRESS = 2;    //进行中
+
+    public static final Integer EXPRESS_STATUS_EXCEPTION = 0;   // 异常
+    public static final Integer EXPRESS_STATUS_COLLECTING = 1;  // 揽件中
+    public static final Integer EXPRESS_STATUS_SHIPPING = 1;    // 运输中
+    public static final Integer EXPRESS_STATUS_DELIVERING = 1;  // 派送中
+    public static final Integer EXPRESS_STATUS_STATION = 1; // 到达网点
+    public static final Integer EXPRESS_STATUS_SIGNED = 1;    // 已签收
 }
