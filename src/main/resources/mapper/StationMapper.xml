@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
+<mapper namespace="com.team24.express.mapper.StationMapper">
+    <select id="com.team24.express.mapper.StationMapper.selectPackagesByConditions" resultType="com.team24.express.entity.Order">
+        select * from `order`
+        <where>
+            <if test="expressNumber != null and expressNumber != '' ">express_number = #{expressNumber}</if>
+            <if test="senderName != null and senderName != '' ">and sender_name = #{senderName}</if>
+            <if test="senderPhone != null and senderPhone != '' ">and sender_phone = #{senderPhone}</if>
+            <if test="senderAddress != null and senderAddress != '' ">and sender_address = #{senderAddress}</if>
+            <if test="recipientName != null and recipientName != '' ">and recipient_name = #{recipientName}</if>
+            <if test="recipientPhone != null and recipientPhone != '' ">and recipient_phone = #{recipientPhone}</if>
+            <if test="recipientAddress != null and recipientAddress != '' ">and recipient_address = #{recipientAddress}</if>
+            <if test="expressStatus != null and expressStatus != '' ">and express_tatus = #{expressStatus}</if>
+            <if test="status != null and status != '' ">and status = #{status}</if>
+            <if test="courierName != null and courierName != '' ">and courier_name = #{courierName}</if>
+            <if test="courierPhone != null and courierPhone != '' ">and courier_phone = #{courierPhone}</if>
+            <if test="courierCode != null and courierCode != '' ">and courier_ode = #{courierCode}</if>
+        </where>
+        order by update_time desc
+    </select>
+
+    <select id="com.team24.express.mapper.StationMapper.selectCourierByCondition" resultType="com.team24.express.entity.StationEmployee">
+        select * from `station_employee`
+        <where>
+            <if test="status != null">status = #{status}</if>
+            <if test="id != null and id != 0"> and employee_id = #{id}</if>
+        </where>
+    </select>
+
+</mapper>
