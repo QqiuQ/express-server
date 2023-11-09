@@ -201,11 +201,15 @@ public class SecurityConfiguration {
                 // token 写到Header
                 response.setHeader(Const.HEADER, "Bearer " + jwt);
 
-                AjaxResult ajax = AjaxResult.success("登录成功");
-                ajax.put("username", user.getUsername());
-                ajax.put("token", jwt);
-                ajax.put("expire", utils.expireTime());
-                writer.write(ajax.asJsonString());
+                Result result = Result.success("登录成功");
+                Map<String, Object> data = new HashMap<>();
+//                AjaxResult ajax = AjaxResult.success("登录成功");
+                data.put("username", user.getUsername());
+                data.put("token", jwt);
+                data.put("expire", utils.expireTime());
+                data.put("accountId", user.getId());
+
+                writer.write(result.asJsonString());
             }
         }
     }
@@ -280,6 +284,8 @@ public class SecurityConfiguration {
             data.put("token", authorization);
             data.put("expire", utils.expireTime());
             data.put("accountType", authUser.getAccountType());
+            data.put("accountId", account.getId());
+            data.put("username", account.getUsername());
             result.setData(data);
             // 登录成功
             if (authUser.getAccountType().equals(AccountConst.TYPE_USER)) {
