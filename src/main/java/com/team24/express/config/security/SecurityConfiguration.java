@@ -284,7 +284,7 @@ public class SecurityConfiguration {
             data.put("token", authorization);
             data.put("expire", utils.expireTime());
             data.put("accountType", authUser.getAccountType());
-            data.put("accountId", account.getId());
+            data.put("accountId", account.getId().toString());
             data.put("username", account.getUsername());
             result.setData(data);
             // 登录成功
