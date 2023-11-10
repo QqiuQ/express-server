@@ -1,11 +1,16 @@
 package com.team24.express.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.team24.express.common.AccountConst;
+import com.team24.express.common.RoleConst;
+import com.team24.express.entity.AccountRole;
+import com.team24.express.entity.Role;
 import com.team24.express.entity.User;
+import com.team24.express.mapper.AccountRoleMapper;
+import com.team24.express.mapper.RoleMapper;
 import com.team24.express.mapper.UserMapper;
 import com.team24.express.service.UserService;
 import jakarta.annotation.Resource;
-import org.springframework.cglib.core.Local;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +28,11 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Resource
     PasswordEncoder passwordEncoder;
+
+    @Resource
+    RoleMapper roleMapper;
+    @Resource
+    AccountRoleMapper accountRoleMapper;
 
     @Override
     public User selectByUsername(String username) {
@@ -55,7 +65,14 @@ public class UserServiceImpl implements UserService {
     public Boolean add(User user) {
         user.setCreateTime(LocalDateTime.now());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (userMapper.insert(user) > 0) return true;
+
+        if (userMapper.insert(user) > 0) {
+            // 添加默认角色
+            User insertUser = this.selectByUsername(user.getUsername());
+            Role userRole = roleMapper.getRoleByRoleName(RoleConst.USER);
+            AccountRole accountRole = new AccountRole(insertUser.getId(), userRole.getId(), AccountConst.TYPE_USER);
+            return accountRoleMapper.insert(accountRole) > 0;
+        }
         return false;
     }
 
@@ -68,7 +85,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean delete(Long id) {
-        if (userMapper.deleteById(id) > 0) return true;
+
+        if (userMapper.deleteById(id) > 0) {
+            // 同时删除角色关联
+            accountRoleMapper.deleteByAccountIdAndType(id, AccountConst.TYPE_USER);
+            return true;
+        }
         return false;
     }
 
