@@ -2,6 +2,8 @@ package com.team24.express.controller;
 
 import com.team24.express.common.Result;
 import com.team24.express.entity.Role;
+import com.team24.express.entity.vo.EmployeeRoleVo;
+import com.team24.express.service.AccountRoleService;
 import com.team24.express.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,9 +12,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @className: RoleController
@@ -25,6 +30,37 @@ import java.time.LocalDateTime;
 public class RoleController {
     @Resource
     RoleService roleService;    // 依赖注入
+
+    @Resource
+    AccountRoleService accountRoleService;
+
+    @Operation(summary = "获取所有角色")
+    @GetMapping()
+    public Result getEmployeeRoleList() {
+        List<Role> roleList = roleService.selectEmployeeRoles();
+        Result result = Result.success("查找成功");
+        result.setData(roleList);
+        return result;
+    }
+
+    //    @PreAuthorize('hasAnyRole()')
+    @Operation(summary = "查询特定角色Id的所有员工")
+    @GetMapping("/employee")
+    public Result getEmployeeByRoleId(@RequestParam("id") Integer id) {
+        List<EmployeeRoleVo> employeeRoleVos = accountRoleService.getEmployeeVoListByRoleId(id);
+        if (Objects.nonNull(employeeRoleVos)) {
+            Result result = Result.success("查找成功");
+            result.setData(employeeRoleVos);
+            return result;
+        }
+        return Result.error("查找失败");
+    }
+
+    @PostMapping("/change")
+    public Result changeRole(@RequestParam("employeeId") Long employeeId,@RequestParam("curRoleId") Integer curRoleId, @RequestParam("newRoleId")Integer newRoleId) {
+        if (accountRoleService.changeRole(employeeId, curRoleId, newRoleId)) return Result.success("更改成功");
+        return Result.error("更改失败");
+    }
 
 
     /**

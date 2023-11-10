@@ -49,8 +49,7 @@ public class Delivery {
 
     public static final Integer EXPRESS_STATUS_EXCEPTION = 0;   // 异常
     public static final Integer EXPRESS_STATUS_COLLECTING = 1;  // 揽件中
-    public static final Integer EXPRESS_STATUS_SHIPPING = 1;    // 运输中
-    public static final Integer EXPRESS_STATUS_DELIVERING = 1;  // 派送中
-    public static final Integer EXPRESS_STATUS_STATION = 1; // 到达网点
-    public static final Integer EXPRESS_STATUS_SIGNED = 1;    // 已签收
+    public static final Integer EXPRESS_STATUS_SHIPPING = 2;    // 运输中
+    public static final Integer EXPRESS_STATUS_DELIVERING = 3;  // 派送中
+    public static final Integer EXPRESS_STATUS_SIGNED = 4;    // 已签收
 }

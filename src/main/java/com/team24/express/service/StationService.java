@@ -9,14 +9,16 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
 
-
+@Deprecated
 public interface StationService {
     Station selectByStationname(String username);
 
     List<Station> getStationList();
 
-    boolean deleteById( Long id);
-    boolean deleteBatchIds( List<Long> ids);
+    boolean deleteById(Long id);
+
+    boolean deleteBatchIds(List<Long> ids);
+
     int insert(Station station);
 
     int update(Station station);

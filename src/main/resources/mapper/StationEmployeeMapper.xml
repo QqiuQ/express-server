@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
+<mapper namespace="com.team24.express.mapper.StationEmployeeMapper">
+
+    <!--    查找网点管理员-->
+    <select id="getAdminsById" resultType="com.team24.express.entity.Employee">
+        select * from station_employee join employee on station_employee.employee_id = employee.id join account_role on
+        employee.id = account_role.account_id
+        join role on account_role.role_id=role.id
+        <where>
+            <if test="stationId !=null ">
+                station_employee.station_id=#{stationId} and role.name='ROLE_STATION_ADMIN'
+            </if>
+        </where>
+    </select>
+
+    <!--    查找网点员工-->
+    <select id="getEmployeesById" resultType="com.team24.express.entity.Employee">
+        select * from station_employee join employee on station_employee.employee_id = employee.id
+
+        <where>
+            <if test="stationId !=null ">
+                station_employee.station_id=#{stationId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

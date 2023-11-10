@@ -1,11 +1,22 @@
 package com.team24.express.controller;
 
 
+import com.team24.express.common.AccountConst;
 import com.team24.express.common.Result;
+import com.team24.express.common.RoleConst;
 import com.team24.express.entity.*;
+import com.team24.express.service.AccountRoleService;
 import com.team24.express.service.EmployeeService;
+import com.team24.express.service.RoleService;
 import com.team24.express.service.StaitonService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,15 +37,23 @@ public class StationController {
     @Autowired
     EmployeeService employeeService;
 
+
     /**
      * 根据传入的参数查询符合要求的所有包裹
      *
-     * @param order
+     * @param delivery
      * @return
      */
-    @PostMapping("/order")
-    public Result selectPackages(@RequestBody Delivery order) {
-        List<Delivery> orderList = stationService.selectPackages(order);
+    @Operation(summary = "条件查询快递", description = "根据返回的实体进行条件查询",
+            parameters = {
+                    @Parameter(name = "delivery", schema = @Schema(implementation = Delivery.class)),
+            },
+            responses = @ApiResponse(description = "返回消息和快递列表",
+                    content = @Content(schema = @Schema(implementation = Delivery.class)))
+    )
+    @PostMapping("/delivery")
+    public Result selectPackages(@RequestBody Delivery delivery) {
+        List<Delivery> orderList = stationService.selectPackages(delivery);
         if (orderList.isEmpty())
             return Result.error("未查询到数据！");
         else {
@@ -51,7 +70,14 @@ public class StationController {
      * @param stationOrder
      * @return
      */
-    @PostMapping("/order/add")
+    @Operation(summary = "快递入库", description = "在站点快递表中新增关系",
+            parameters = {
+                    @Parameter(name = "stationOrder", schema = @Schema(implementation = StationOrder.class)),
+            },
+            responses = @ApiResponse(description = "返回消息"
+            )
+    )
+    @PostMapping("/delivery/add")
     public Result packageInRep(@RequestBody StationOrder stationOrder) {
         stationService.packageInRep(stationOrder);
         return Result.success("快递入库成功！");
@@ -63,7 +89,14 @@ public class StationController {
      * @param stationOrder
      * @return
      */
-    @PostMapping("/order/remove")
+    @Operation(summary = "快递出库", description = "从站点快递表删除关系",
+            parameters = {
+                    @Parameter(name = "stationOrder", schema = @Schema(implementation = StationOrder.class)),
+            },
+            responses = @ApiResponse(description = "返回消息"
+            )
+    )
+    @PostMapping("/delivery/remove")
     public Result packageOutRep(@RequestBody StationOrder stationOrder) {
         stationService.packageOutRep(stationOrder);
         return Result.success("快递出库成功！");
@@ -76,6 +109,14 @@ public class StationController {
      * @param stationId
      * @return
      */
+    @Operation(summary = "添加网点快递员", description = "网点关系表内添加网点与员工关系",
+            parameters = {
+                    @Parameter(name = "employeeId", schema = @Schema(implementation = Long.class)),
+                    @Parameter(name = "stationId", schema = @Schema(implementation = Long.class)),
+            },
+            responses = @ApiResponse(description = "返回消息"
+            )
+    )
     @PostMapping("/employee/add")
     public Result addNewCourier(@RequestParam Long employeeId, @RequestParam Long stationId) {
         Employee courier = employeeService.selectById(employeeId);
@@ -99,8 +140,12 @@ public class StationController {
      * @param employee
      * @return
      */
+    @Deprecated(since = "查询本网点快递员，应根据网点Id从网点员工关系表内查找到快递员。\n" +
+            "请使用StationEmployeeController 的 getEmployees()\n" +
+            "网点端中，获取所有员工，在通过过滤的方式，筛选出快递员。")
     @PostMapping("/employee")
     public Result searchCourier(@RequestBody Employee employee) {
+
         List<StationEmployee> seList = stationService.searchCourier(employee.getStatus(), employee.getId());
         if (seList.isEmpty())
             return Result.error("无匹配结果");
@@ -117,6 +162,13 @@ public class StationController {
      * @param emloyeeId
      * @return
      */
+    @Operation(summary = "查看快递员信息", description = "该方法与EmployeeController GET /employee 一致",
+            parameters = {
+                    @Parameter(name = "employee_id", schema = @Schema(implementation = Long.class)),
+            },
+            responses = @ApiResponse(description = "返回消息"
+            )
+    )
     @GetMapping("/employee/info")
     public Result searchCourierInfo(@RequestParam("employee_id") Long emloyeeId) {
         Employee employee = employeeService.selectById(emloyeeId);
@@ -131,6 +183,13 @@ public class StationController {
      * @param id
      * @return
      */
+    @Operation(summary = "撤销网点员工", description = "根据关系Id删除网点与员工的关系",
+            parameters = {
+                    @Parameter(name = "id",description = "网点员工关系Id",schema = @Schema(implementation = Long.class)),
+            },
+            responses = @ApiResponse(description = "返回消息"
+            )
+    )
     @PostMapping("/employee/delete")
     public Result deleteCourier(@RequestParam("id") Long id) {
         Employee employee = employeeService.selectById(id);

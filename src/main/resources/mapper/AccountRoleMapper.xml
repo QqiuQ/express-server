@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
-<mapper namespace="com.team24.express.mapper.RolePermissionMapper">
+<mapper namespace="com.team24.express.mapper.AccountRoleMapper">
 
 
+    <!--    多表链接查询-->
+    <select id="getEmployeeVoListByRoleName" resultType="com.team24.express.entity.vo.EmployeeRoleVo">
+        select employee.id as employee_id employee.username, employee.name, employee.code, employee.phone,
+        employee.email,employee.status, employee.account_status, role.id, role.name from role, employee,account_role
+        <where>
+            <if test="roleName != null and roleName !='' ">
+                role.name=#{roleName} and role.id=account_role.role_id and account_role.account_id=employee.id
+            </if>
+        </where>
+    </select>
+    <select id="getEmployeeVoListByRoleId" resultType="com.team24.express.entity.vo.EmployeeRoleVo">
+        select employee.id as 'employee_id', employee.username, employee.name, employee.code, employee.phone,
+        employee.email,employee.status, employee.account_status, role.id as 'role_id', role.name as 'role_name'
+        from account_role join role on account_role.role_id = role.id join employee on account_role.account_id =
+        employee.id
+        <where>
+            role.id= #{id}
+        </where>
+    </select>
 </mapper>

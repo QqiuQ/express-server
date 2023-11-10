@@ -1,10 +1,15 @@
 package com.team24.express.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.team24.express.common.RoleConst;
+import com.team24.express.controller.RoleController;
 import com.team24.express.entity.Role;
 import com.team24.express.mapper.RoleMapper;
 import com.team24.express.service.RoleService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @className: RoleServiceImpl
@@ -33,4 +38,18 @@ public class RoleServiceImpl implements RoleService {
         if (roleMapper.deleteById(id) > 0) return true;
         return false;
     }
+
+    @Override
+    public List<Role> selectEmployeeRoles() {
+        QueryWrapper<Role> wrapper = new QueryWrapper<>();
+        wrapper.ne("name", RoleConst.USER);
+        return roleMapper.selectList(wrapper);
+    }
+
+    @Override
+    public Role getRoleByName(String stationAdmin) {
+        return roleMapper.getRoleByRoleName(stationAdmin);
+    }
+
+
 }
