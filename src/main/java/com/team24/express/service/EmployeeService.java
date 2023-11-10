@@ -31,5 +31,7 @@ public interface EmployeeService {
 
     Boolean updateLastLoginTime(Employee employee);
 
-    Boolean addSpecifyRoleEmployee(Employee employee,String roleName);
+    Boolean addSpecifyRoleEmployee(Employee employee, String roleName);
+
+    List<Employee> selectRoleEmployees(String roleName);
 }

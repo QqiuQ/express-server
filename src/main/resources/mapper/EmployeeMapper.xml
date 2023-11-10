@@ -14,4 +14,16 @@
         </where>
     </select>
 
+    <!--    查找特定角色的员工-->
+    <select id="selectRoleEmployees" resultType="com.team24.express.entity.Employee">
+        select * from employee join account_role on employee.id = account_role.account_id join role on
+        account_role.role_id = role.id
+        <where>
+            account_role.type='EMPLOYEE'
+            <if test="roleName !=null and roleName != ''">
+                and role.name=#{roleName}
+            </if>
+        </where>
+    </select>
+
 </mapper>

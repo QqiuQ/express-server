@@ -31,8 +31,8 @@
             </if>
         </where>
     </select>
-    <!--    根据管理员Id获取站点-->
-    <select id="getStationByAdminId" resultType="com.team24.express.entity.Station">
+    <!--    根据员工Id获取站点-->
+    <select id="getStationByEmployeeId" resultType="com.team24.express.entity.Station">
         select station.* from station_employee join station on station_employee.station_id=station.id
         <where>
             <if test="employeeId !=null ">
@@ -40,5 +40,6 @@
             </if>
         </where>
     </select>
+
 
 </mapper>

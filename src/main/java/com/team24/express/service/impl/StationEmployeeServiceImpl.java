@@ -1,5 +1,6 @@
 package com.team24.express.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.team24.express.entity.Employee;
 import com.team24.express.entity.Station;
 import com.team24.express.entity.StationEmployee;
@@ -42,7 +43,22 @@ public class StationEmployeeServiceImpl implements StationEmployeeService {
     }
 
     @Override
-    public Station getStationByAdminId(Long employeeId) {
-        return stationEmployeeMapper.getStationByAdminId(employeeId);
+    public Station getStationByEmployeeId(Long employeeId) {
+        return stationEmployeeMapper.getStationByEmployeeId(employeeId);
     }
+
+    @Override
+    public StationEmployee getByEmployeeId(Long employeeId) {
+        QueryWrapper<StationEmployee> wrapper = new QueryWrapper<>();
+        wrapper.eq("employee_id", employeeId);
+        return stationEmployeeMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public List<StationEmployee> getByStationId(Long stationId) {
+        QueryWrapper<StationEmployee> wrapper = new QueryWrapper<>();
+        wrapper.eq("station_id", stationId);
+        return stationEmployeeMapper.selectList(wrapper);
+    }
+
 }

@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 /**
  * @className: EmployeeMapper
  * @author: Bobby
@@ -24,4 +26,12 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
 
     @Select("select * from employee where username=#{username}")
     Employee selectByUsername(String username);
+
+    /**
+     * 查找特定角色员工
+     *
+     * @param roleName
+     * @return
+     */
+    List<Employee> selectRoleEmployees(String roleName);
 }

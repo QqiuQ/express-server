@@ -20,5 +20,5 @@ public interface StationEmployeeMapper extends BaseMapper<StationEmployee> {
 
     List<EmployeeRoleVo> getEmployeesById(Long stationId);
 
-    Station getStationByAdminId(Long employeeId);
+    Station getStationByEmployeeId(Long employeeId);
 }

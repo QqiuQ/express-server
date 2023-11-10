@@ -19,5 +19,9 @@ public interface StationEmployeeService {
 
     List<EmployeeRoleVo> getEmployeesById(Long stationId);
 
-    Station getStationByAdminId(Long employeeId);
+    Station getStationByEmployeeId(Long employeeId);
+
+    StationEmployee getByEmployeeId(Long employeeId);
+
+    List<StationEmployee> getByStationId(Long stationId);
 }
