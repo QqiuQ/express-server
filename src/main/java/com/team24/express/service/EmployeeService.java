@@ -17,6 +17,12 @@ public interface EmployeeService {
 
     List<Employee> selectEmployeeList(Employee employee);
 
+    /**
+     * 包含密码加密和添加普通员工角色关联
+     *
+     * @param employee
+     * @return
+     */
     Boolean add(Employee employee);
 
     Boolean edit(Employee employee);
@@ -24,4 +30,6 @@ public interface EmployeeService {
     Boolean delete(Long id);
 
     Boolean updateLastLoginTime(Employee employee);
+
+    Boolean addSpecifyRoleEmployee(Employee employee,String roleName);
 }

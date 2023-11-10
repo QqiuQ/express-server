@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.team24.express.entity.Employee;
 import com.team24.express.entity.Station;
 import com.team24.express.entity.StationEmployee;
+import com.team24.express.entity.vo.EmployeeRoleVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -15,9 +16,9 @@ import java.util.List;
  **/
 @Mapper
 public interface StationEmployeeMapper extends BaseMapper<StationEmployee> {
-    List<Employee> getAdminsById(Long stationId);
+    List<EmployeeRoleVo> getAdminsById(Long stationId);
 
-    List<Employee> getEmployeesById(Long stationId);
+    List<EmployeeRoleVo> getEmployeesById(Long stationId);
 
     Station getStationByAdminId(Long employeeId);
 }

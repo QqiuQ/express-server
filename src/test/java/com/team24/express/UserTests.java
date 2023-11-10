@@ -10,6 +10,7 @@ import com.team24.express.entity.AccountRole;
 import com.team24.express.mapper.RoleMapper;
 import com.team24.express.mapper.UserMapper;
 import com.team24.express.mapper.AccountRoleMapper;
+import com.team24.express.service.UserService;
 import jakarta.annotation.Resource;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,9 @@ public class UserTests {
     RoleMapper roleMapper;
     @Resource
     AccountRoleMapper accountRoleMapper;
+
+    @Resource
+    UserService userService;
 
     @Test
     void delete() {
@@ -110,24 +114,25 @@ public class UserTests {
     }
 
     @Test
-    public void addUsers() {
-        Role userRole = roleMapper.getRoleByRoleName(RoleConst.USER);
-        for (int i = 0; i < 20; i++) {
-            String username = "user_" + i;
-            String password = "123456";
-            User user = new User();
-            user.setUsername(username);
-            user.setPassword(passwordEncoder.encode(password));
-            user.setCreateTime(LocalDateTime.now());
+    public void addDefaultUser() {
+        User vividbobo = new User();
+        vividbobo.setUsername("vividbobo");
+        vividbobo.setPassword("123456");
+        userService.add(vividbobo);
 
-            // 创建角色关联
-            if (userMapper.insert(user) > 0) {
-                User curUser = userMapper.selectByUsername(username);
-                AccountRole ur = new AccountRole(curUser.getId(), userRole.getId(), AccountConst.TYPE_USER);
-                Assert.assertTrue(accountRoleMapper.insert(ur) > 0);
-            } else {
-                Assert.assertTrue(false);   // insert user failed
-            }
+        User user = new User();
+        user.setUsername("user");
+        user.setPassword("123456");
+        userService.add(user);
+    }
+
+    @Test
+    public void addUsers() {
+        for (int i = 0; i < 20; i++) {
+            User user = new User();
+            user.setUsername("user#" + i);
+            user.setPassword("123456");
+            userService.add(user);
         }
     }
 

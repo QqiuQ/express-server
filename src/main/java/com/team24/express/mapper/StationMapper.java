@@ -29,19 +29,19 @@ public interface StationMapper extends BaseMapper<Station> {
     /**
      * 新增快递（快递入库）
      *
-     * @param stationOrder
+     * @param stationDelivery
      */
     @Insert("insert into express.station_order(order_id, station_id, create_time, update_time) " +
             "values (#{orderId},#{stationId},#{createTime},#{updateTime})")
-    void addNewPackage(StationOrder stationOrder);
+    void addNewPackage(StationDelivery stationDelivery);
 
     /**
      * 修改快递状态（快递出库）
      *
-     * @param stationOrder
+     * @param stationDelivery
      */
     @Update("update express.station_order set status = 1, update_time = #{updateTime} where id = #{id}")
-    void updatePackageCondition(StationOrder stationOrder);
+    void updatePackageCondition(StationDelivery stationDelivery);
 
     /**
      * 快递网点录入快递员

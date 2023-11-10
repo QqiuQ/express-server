@@ -3,8 +3,11 @@
 <mapper namespace="com.team24.express.mapper.StationEmployeeMapper">
 
     <!--    查找网点管理员-->
-    <select id="getAdminsById" resultType="com.team24.express.entity.Employee">
-        select * from station_employee join employee on station_employee.employee_id = employee.id join account_role on
+    <select id="getAdminsById" resultType="com.team24.express.entity.vo.EmployeeRoleVo">
+        select employee.id as 'employee_id', employee.username, employee.name, employee.code,
+        employee.phone, employee.email, employee.status, employee.account_status, employee.avatar,
+        employee.sex, employee.address, employee.hire_date, role.id as 'role_id', role.name as 'role_name'
+        from station_employee join employee on station_employee.employee_id = employee.id join account_role on
         employee.id = account_role.account_id
         join role on account_role.role_id=role.id
         <where>
@@ -15,9 +18,13 @@
     </select>
 
     <!--    查找网点员工-->
-    <select id="getEmployeesById" resultType="com.team24.express.entity.Employee">
-        select * from station_employee join employee on station_employee.employee_id = employee.id
-
+    <select id="getEmployeesById" resultType="com.team24.express.entity.vo.EmployeeRoleVo">
+        select employee.id as 'employee_id', employee.username, employee.name, employee.code,
+        employee.phone, employee.email, employee.status, employee.account_status, employee.avatar,
+        employee.sex, employee.address, employee.hire_date, role.id as 'role_id', role.name as 'role_name'
+        from station_employee join employee on station_employee.employee_id = employee.id join account_role on
+        employee.id = account_role.account_id
+        join role on account_role.role_id=role.id
         <where>
             <if test="stationId !=null ">
                 station_employee.station_id=#{stationId}

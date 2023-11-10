@@ -61,38 +61,38 @@ public class StationController {
     /**
      * 快递入库（订单与网点关系表中新增）
      *
-     * @param stationOrder
+     * @param stationDelivery
      * @return
      */
     @Operation(summary = "快递入库", description = "在站点快递表中新增关系",
             parameters = {
-                    @Parameter(name = "stationOrder", schema = @Schema(implementation = StationOrder.class)),
+                    @Parameter(name = "stationOrder", schema = @Schema(implementation = StationDelivery.class)),
             },
             responses = @ApiResponse(description = "返回消息"
             )
     )
     @PostMapping("/delivery/add")
-    public Result packageInRep(@RequestBody StationOrder stationOrder) {
-        stationService.packageInRep(stationOrder);
+    public Result packageInRep(@RequestBody StationDelivery stationDelivery) {
+        stationService.packageInRep(stationDelivery);
         return Result.success("快递入库成功！");
     }
 
     /**
      * 快递出库（订单与网点关系表中修改订单的状态为已出库）
      *
-     * @param stationOrder
+     * @param stationDelivery
      * @return
      */
     @Operation(summary = "快递出库", description = "从站点快递表删除关系",
             parameters = {
-                    @Parameter(name = "stationOrder", schema = @Schema(implementation = StationOrder.class)),
+                    @Parameter(name = "stationOrder", schema = @Schema(implementation = StationDelivery.class)),
             },
             responses = @ApiResponse(description = "返回消息"
             )
     )
     @PostMapping("/delivery/remove")
-    public Result packageOutRep(@RequestBody StationOrder stationOrder) {
-        stationService.packageOutRep(stationOrder);
+    public Result packageOutRep(@RequestBody StationDelivery stationDelivery) {
+        stationService.packageOutRep(stationDelivery);
         return Result.success("快递出库成功！");
     }
 
@@ -111,7 +111,7 @@ public class StationController {
             responses = @ApiResponse(description = "返回消息"
             )
     )
-    @PostMapping("/employee/add")
+    @PostMapping("/courier/add")
     public Result addNewCourier(@RequestParam Long employeeId, @RequestParam Long stationId) {
         Employee courier = employeeService.selectById(employeeId);
         if (Objects.isNull(courier))
@@ -124,6 +124,32 @@ public class StationController {
             e.setEmployeeId(courier.getId());
             e.setPosition("网点快递员");
             stationService.addNewCourier(e);
+            return Result.success("录入成功");
+        }
+    }
+
+    @Operation(summary = "添加员工", description = "网点关系表内添加网点与员工关系",
+            parameters = {
+                    @Parameter(name = "employeeId", schema = @Schema(implementation = Long.class)),
+                    @Parameter(name = "stationId", schema = @Schema(implementation = Long.class)),
+            },
+            responses = @ApiResponse(description = "返回消息"
+            )
+    )
+    @PostMapping("/employee/add")
+    public Result addEmployee(@RequestParam Long employeeId, @RequestParam Long stationId) {
+        Employee courier = employeeService.selectById(employeeId);
+        if (Objects.isNull(courier))
+            return Result.error("不存在该员工");
+        else {
+            StationEmployee e = new StationEmployee();
+            e.setStationId(stationId);
+            e.setCreateTime(LocalDateTime.now());
+            e.setUpdateTime(LocalDateTime.now());
+            e.setEmployeeId(courier.getId());
+            e.setPosition("网点员工");
+            stationService.addNewCourier(e);
+
             return Result.success("录入成功");
         }
     }

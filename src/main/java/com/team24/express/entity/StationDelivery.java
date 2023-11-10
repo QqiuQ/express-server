@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
  * @date: 11/8/2023
  * 网点订单关系实体类
  **/
-@Schema(name = "StationOrder", title = "网点订单关系表")    // springdoc(api 文档) 实体类注解
+@Schema(name = "StationDelivery", title = "网点订单关系表")    // springdoc(api 文档) 实体类注解
 @Data
-@TableName("station_order")
-public class StationOrder {
+@TableName("station_delivery")
+public class StationDelivery {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
     @JsonFormat(shape = JsonFormat.Shape.STRING)

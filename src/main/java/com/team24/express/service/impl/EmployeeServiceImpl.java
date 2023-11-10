@@ -92,16 +92,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Boolean add(Employee employee) {
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
-        if (employeeMapper.insert(employee) > 0) {
-            // 添加角色关联
-            Employee insertEmp = this.selectByUsername(employee.getUsername());
-            Role userRole = roleMapper.getRoleByRoleName(RoleConst.EMPLOYEE);
-            AccountRole accountRole = new AccountRole(insertEmp.getId(), userRole.getId(), AccountConst.TYPE_EMPLOYEE);
-            return accountRoleMapper.insert(accountRole) > 0;
-        }
-        return false;
+//        employee.setCreateTime(LocalDateTime.now());
+//        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
+//        if (employeeMapper.insert(employee) > 0) {
+//            // 添加角色关联
+//            Employee insertEmp = this.selectByUsername(employee.getUsername());
+//            Role userRole = roleMapper.getRoleByRoleName(RoleConst.EMPLOYEE);
+//            AccountRole accountRole = new AccountRole(insertEmp.getId(), userRole.getId(), AccountConst.TYPE_EMPLOYEE);
+//            return accountRoleMapper.insert(accountRole) > 0;
+//        }
+//        return false;
+        return addSpecifyRoleEmployee(employee, RoleConst.EMPLOYEE);
     }
 
     @Override
@@ -121,6 +122,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Boolean updateLastLoginTime(Employee employee) {
         employee.setLastLoginTime(LocalDateTime.now());
         if (employeeMapper.updateById((Employee) employee) > 0) return true;
+        return false;
+    }
+
+    @Override
+    public Boolean addSpecifyRoleEmployee(Employee employee, String roleName) {
+        if (!roleName.equals(RoleConst.STATION_ADMIN) && !roleName.equals(RoleConst.SUPER_ADMIN)
+                && !roleName.equals(RoleConst.DELIVERY_MAN) && roleName.equals(RoleConst.EMPLOYEE))
+            roleName = RoleConst.EMPLOYEE;
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
+        if (employeeMapper.insert(employee) > 0) {
+            // 添加角色关联
+            Employee insertEmp = this.selectByUsername(employee.getUsername());
+            Role userRole = roleMapper.getRoleByRoleName(roleName);
+            AccountRole accountRole = new AccountRole(insertEmp.getId(), userRole.getId(), AccountConst.TYPE_EMPLOYEE);
+            return accountRoleMapper.insert(accountRole) > 0;
+        }
         return false;
     }
 

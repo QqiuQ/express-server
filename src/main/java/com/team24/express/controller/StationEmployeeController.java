@@ -4,6 +4,7 @@ import com.team24.express.common.AccountConst;
 import com.team24.express.common.Result;
 import com.team24.express.common.RoleConst;
 import com.team24.express.entity.*;
+import com.team24.express.entity.vo.EmployeeRoleVo;
 import com.team24.express.service.AccountRoleService;
 import com.team24.express.service.EmployeeService;
 import com.team24.express.service.RoleService;
@@ -11,9 +12,11 @@ import com.team24.express.service.StationEmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -75,7 +78,7 @@ public class StationEmployeeController {
     )
     @GetMapping("/admins")
     public Result getAdmins(@RequestParam("stationId") Long stationId) {
-        List<Employee> admins = stationEmployeeService.getAdminsById(stationId);
+        List<EmployeeRoleVo> admins = stationEmployeeService.getAdminsById(stationId);
         if (Objects.nonNull(admins)) {
             Result result = Result.success("查找成功");
             result.setData(admins);
@@ -92,7 +95,7 @@ public class StationEmployeeController {
     )
     @GetMapping("/employees")
     public Result getEmployees(@RequestParam("stationId") Long stationId) {
-        List<Employee> admins = stationEmployeeService.getEmployeesById(stationId);
+        List<EmployeeRoleVo> admins = stationEmployeeService.getEmployeesById(stationId);
         if (Objects.nonNull(admins)) {
             Result result = Result.success("查找成功");
             result.setData(admins);
@@ -116,6 +119,8 @@ public class StationEmployeeController {
         }
         return Result.error("查找失败");
     }
+
+
 
 
 }
