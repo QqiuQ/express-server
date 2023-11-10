@@ -3,7 +3,7 @@ package com.team24.express.service;
 import com.team24.express.entity.Delivery;
 import com.team24.express.entity.Station;
 import com.team24.express.entity.StationEmployee;
-import com.team24.express.entity.StationOrder;
+import com.team24.express.entity.StationDelivery;
 
 import java.util.List;
 
@@ -23,16 +23,16 @@ public interface StaitonService {
     /**
      * 订单与网点关系表中新增-快递入库
      *
-     * @param stationOrder
+     * @param stationDelivery
      */
-    void packageInRep(StationOrder stationOrder);
+    void packageInRep(StationDelivery stationDelivery);
 
     /**
      * 订单与网点关系表中修改包裹状态
      *
-     * @param stationOrder
+     * @param stationDelivery
      */
-    void packageOutRep(StationOrder stationOrder);
+    void packageOutRep(StationDelivery stationDelivery);
 
 
     /**

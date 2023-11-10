@@ -24,16 +24,16 @@ public class StationServiceImpl implements StaitonService {
     }
 
     @Override
-    public void packageInRep(StationOrder stationOrder) {
-        stationOrder.setCreateTime(LocalDateTime.now());
-        stationOrder.setUpdateTime(LocalDateTime.now());
-        stationMapper.addNewPackage(stationOrder);
+    public void packageInRep(StationDelivery stationDelivery) {
+        stationDelivery.setCreateTime(LocalDateTime.now());
+        stationDelivery.setUpdateTime(LocalDateTime.now());
+        stationMapper.addNewPackage(stationDelivery);
     }
 
     @Override
-    public void packageOutRep(StationOrder stationOrder) {
-        stationOrder.setUpdateTime(LocalDateTime.now());
-        stationMapper.updatePackageCondition(stationOrder);
+    public void packageOutRep(StationDelivery stationDelivery) {
+        stationDelivery.setUpdateTime(LocalDateTime.now());
+        stationMapper.updatePackageCondition(stationDelivery);
     }
 
     @Override
