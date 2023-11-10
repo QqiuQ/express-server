@@ -3,10 +3,7 @@ package com.team24.express.controller;
 import com.team24.express.common.AccountConst;
 import com.team24.express.common.Result;
 import com.team24.express.common.RoleConst;
-import com.team24.express.entity.AccountRole;
-import com.team24.express.entity.Employee;
-import com.team24.express.entity.Role;
-import com.team24.express.entity.StationEmployee;
+import com.team24.express.entity.*;
 import com.team24.express.service.AccountRoleService;
 import com.team24.express.service.EmployeeService;
 import com.team24.express.service.RoleService;
@@ -76,7 +73,7 @@ public class StationEmployeeController {
                     @Parameter(name = "employeeId", schema = @Schema(implementation = Long.class))
             }
     )
-    @GetMapping("admins")
+    @GetMapping("/admins")
     public Result getAdmins(@RequestParam("stationId") Long stationId) {
         List<Employee> admins = stationEmployeeService.getAdminsById(stationId);
         if (Objects.nonNull(admins)) {
@@ -93,12 +90,28 @@ public class StationEmployeeController {
                     @Parameter(name = "employeeId", schema = @Schema(implementation = Long.class))
             }
     )
-    @GetMapping("employees")
+    @GetMapping("/employees")
     public Result getEmployees(@RequestParam("stationId") Long stationId) {
         List<Employee> admins = stationEmployeeService.getEmployeesById(stationId);
         if (Objects.nonNull(admins)) {
             Result result = Result.success("查找成功");
             result.setData(admins);
+            return result;
+        }
+        return Result.error("查找失败");
+    }
+
+    @Operation(summary = "获取管理员关联站点信息", description = "根据网点管理员Id获取其管理的站点信息(一个管理员只能管理一个站点)",
+            parameters = {
+                    @Parameter(name = "adminId", schema = @Schema(implementation = Long.class)),
+            }
+    )
+    @GetMapping()
+    public Result getStationByAdminId(@RequestParam("employeeId") Long employeeId) {
+        Station station = stationEmployeeService.getStationByAdminId(employeeId);
+        if (Objects.nonNull(station)) {
+            Result result = Result.success("查找成功");
+            result.setData(station);
             return result;
         }
         return Result.error("查找失败");

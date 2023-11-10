@@ -1,22 +1,16 @@
 package com.team24.express.controller;
 
 
-import com.team24.express.common.AccountConst;
 import com.team24.express.common.Result;
-import com.team24.express.common.RoleConst;
 import com.team24.express.entity.*;
-import com.team24.express.service.AccountRoleService;
 import com.team24.express.service.EmployeeService;
-import com.team24.express.service.RoleService;
 import com.team24.express.service.StaitonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -185,7 +179,7 @@ public class StationController {
      */
     @Operation(summary = "撤销网点员工", description = "根据关系Id删除网点与员工的关系",
             parameters = {
-                    @Parameter(name = "id",description = "网点员工关系Id",schema = @Schema(implementation = Long.class)),
+                    @Parameter(name = "id", description = "网点员工关系Id", schema = @Schema(implementation = Long.class)),
             },
             responses = @ApiResponse(description = "返回消息"
             )

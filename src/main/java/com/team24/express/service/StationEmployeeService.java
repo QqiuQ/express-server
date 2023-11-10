@@ -1,6 +1,7 @@
 package com.team24.express.service;
 
 import com.team24.express.entity.Employee;
+import com.team24.express.entity.Station;
 import com.team24.express.entity.StationEmployee;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface StationEmployeeService {
     List<Employee> getAdminsById(Long stationId);
 
     List<Employee> getEmployeesById(Long stationId);
+
+    Station getStationByAdminId(Long employeeId);
 }

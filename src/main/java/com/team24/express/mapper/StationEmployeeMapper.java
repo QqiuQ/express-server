@@ -2,6 +2,7 @@ package com.team24.express.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.team24.express.entity.Employee;
+import com.team24.express.entity.Station;
 import com.team24.express.entity.StationEmployee;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -17,4 +18,6 @@ public interface StationEmployeeMapper extends BaseMapper<StationEmployee> {
     List<Employee> getAdminsById(Long stationId);
 
     List<Employee> getEmployeesById(Long stationId);
+
+    Station getStationByAdminId(Long employeeId);
 }

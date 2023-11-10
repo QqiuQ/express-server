@@ -1,6 +1,7 @@
 package com.team24.express.service.impl;
 
 import com.team24.express.entity.Employee;
+import com.team24.express.entity.Station;
 import com.team24.express.entity.StationEmployee;
 import com.team24.express.mapper.StationEmployeeMapper;
 import com.team24.express.service.StationEmployeeService;
@@ -37,5 +38,10 @@ public class StationEmployeeServiceImpl implements StationEmployeeService {
     public List<Employee> getEmployeesById(Long stationId) {
         return stationEmployeeMapper.getEmployeesById(stationId);
 
+    }
+
+    @Override
+    public Station getStationByAdminId(Long employeeId) {
+        return stationEmployeeMapper.getStationByAdminId(employeeId);
     }
 }
