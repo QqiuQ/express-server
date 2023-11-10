@@ -19,13 +19,14 @@ public class StationEmployee {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-
     private Long stationId;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-
     private Long employeeId;
+
     private String position;
     private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+
+
 }

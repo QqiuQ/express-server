@@ -46,6 +46,10 @@ public class RoleServiceImpl implements RoleService {
         return roleMapper.selectList(wrapper);
     }
 
+    @Override
+    public Role getRoleByName(String stationAdmin) {
+        return roleMapper.getRoleByRoleName(stationAdmin);
+    }
 
 
 }

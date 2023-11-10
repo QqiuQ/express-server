@@ -1,5 +1,7 @@
 package com.team24.express.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.team24.express.entity.AccountRole;
 import com.team24.express.entity.vo.EmployeeRoleVo;
 import com.team24.express.mapper.AccountRoleMapper;
 import com.team24.express.service.AccountRoleService;
@@ -35,5 +37,23 @@ public class AccountRoleServiceImpl implements AccountRoleService {
     @Override
     public boolean changeRole(Long employeeId, Integer curRoleId, Integer newRoleId) {
         return accountRoleMapper.changeRole(employeeId, curRoleId, newRoleId) > 0;
+    }
+
+    @Override
+    public boolean setRole(Long employeeId, Integer roleId) {
+        return accountRoleMapper.setRole(employeeId, roleId) > 0;
+    }
+
+    @Override
+    public AccountRole selectByAccountIdAndRoleId(Long accountId, Integer roleId) {
+        QueryWrapper<AccountRole> wrapper = new QueryWrapper<>();
+        wrapper.eq("account_id", accountId);
+        wrapper.eq("role_id", roleId);
+        return accountRoleMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public boolean add(AccountRole accountRole) {
+        return accountRoleMapper.insert(accountRole) > 0;
     }
 }

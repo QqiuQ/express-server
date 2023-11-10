@@ -33,4 +33,7 @@ public interface AccountRoleMapper extends BaseMapper<AccountRole> {
 
     @Update("update account_role set role_id = #{newRoleId} where account_id=#{employeeId} and role_id = #{curRoleId}")
     int changeRole(Long employeeId, Integer curRoleId, Integer newRoleId);
+
+    @Update("update account_role set role_id=#{roleId} where account_id = #{employeeId}")
+    int setRole(Long employeeId, Integer roleId);
 }

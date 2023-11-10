@@ -18,4 +18,5 @@ public interface RoleService {
 
     List<Role> selectEmployeeRoles();
 
+    Role getRoleByName(String stationAdmin);
 }
