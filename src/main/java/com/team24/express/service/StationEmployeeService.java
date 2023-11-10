@@ -1,8 +1,8 @@
 package com.team24.express.service;
 
-import com.team24.express.entity.Employee;
 import com.team24.express.entity.Station;
 import com.team24.express.entity.StationEmployee;
+import com.team24.express.entity.vo.EmployeeRoleVo;
 
 import java.util.List;
 
@@ -15,9 +15,9 @@ public interface StationEmployeeService {
 
     boolean add(StationEmployee se);
 
-    List<Employee> getAdminsById(Long stationId);
+    List<EmployeeRoleVo> getAdminsById(Long stationId);
 
-    List<Employee> getEmployeesById(Long stationId);
+    List<EmployeeRoleVo> getEmployeesById(Long stationId);
 
     Station getStationByAdminId(Long employeeId);
 }

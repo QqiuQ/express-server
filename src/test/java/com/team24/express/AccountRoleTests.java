@@ -10,6 +10,7 @@ import com.team24.express.mapper.EmployeeMapper;
 import com.team24.express.mapper.RoleMapper;
 import com.team24.express.mapper.UserMapper;
 import com.team24.express.mapper.AccountRoleMapper;
+import com.team24.express.service.EmployeeService;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,41 +32,71 @@ public class AccountRoleTests {
     UserMapper userMapper;
     @Resource
     RoleMapper roleMapper;
+    @Resource
+    EmployeeService employeeService;
 
     @Test
-    void createUserRole() {
-        Employee bobby = employeeMapper.selectByUsername("bobby");
-        Role superAdmin = roleMapper.getRoleByRoleName(RoleConst.SUPER_ADMIN);
-        AccountRole ur1 = new AccountRole(bobby.getId(), superAdmin.getId(), AccountConst.TYPE_EMPLOYEE);
+    void createDefaultEmployee() {
+        Employee bobby = new Employee();
+        bobby.setUsername("bobby");
+        bobby.setCode("000001");
+        bobby.setPassword("123456");
+        try {
+            employeeService.addSpecifyRoleEmployee(bobby, RoleConst.SUPER_ADMIN);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        Employee station = new Employee();
+        station.setUsername("station");
+        station.setCode("000002");
+        station.setPassword("123456");
+        try {
+            employeeService.addSpecifyRoleEmployee(station, RoleConst.STATION_ADMIN);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        Employee normaluser = employeeMapper.selectByUsername("normaluser");
-        Role employeeRole = roleMapper.getRoleByRoleName(RoleConst.EMPLOYEE);
-        AccountRole ur2 = new AccountRole(normaluser.getId(), employeeRole.getId(), AccountConst.TYPE_EMPLOYEE);
+        Employee deliveryman = new Employee();
+        deliveryman.setUsername("deliveryman");
+        deliveryman.setPassword("123456");
+        deliveryman.setCode("000003");
+        try {
+            employeeService.addSpecifyRoleEmployee(deliveryman, RoleConst.DELIVERY_MAN);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        User vividbobo = userMapper.selectByUsername("vividbobo");
-        Role userRole = roleMapper.getRoleByRoleName(RoleConst.USER);
-        AccountRole ur3 = new AccountRole(vividbobo.getId(), userRole.getId(), AccountConst.TYPE_USER);
+        Employee admin = new Employee();
+        admin.setUsername("admin");
+        admin.setCode("000004");
+        admin.setPassword("123456");
+        try {
+            employeeService.addSpecifyRoleEmployee(admin, RoleConst.SUPER_ADMIN);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        accountRoleMapper.insert(ur1);
-        accountRoleMapper.insert(ur2);
-        accountRoleMapper.insert(ur3);
+        Employee employee = new Employee();
+        employee.setUsername("employee");
+        employee.setPassword("123456");
+        employee.setCode("000005");
+        try {
+            employeeService.addSpecifyRoleEmployee(employee, RoleConst.EMPLOYEE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
-    void createNewUserRole() {
-        Employee bobby = employeeMapper.selectByUsername("bobby");
-        Role stationRole = roleMapper.getRoleByRoleName(RoleConst.STATION_ADMIN);
-        AccountRole ur1 = new AccountRole(bobby.getId(), stationRole.getId(), AccountConst.TYPE_EMPLOYEE);
-        accountRoleMapper.insert(ur1);
-
+    void createEmployees() {
+        for (int i = 0; i < 20; i++) {
+            Employee employee = new Employee();
+            employee.setUsername("emp#" + i);
+            employee.setCode(String.format("emp%05d", i));
+            employee.setPassword("123456");
+            employeeService.add(employee);
+        }
     }
 
-    @Test
-    void select() {
-        Employee bobby = employeeMapper.selectByUsername("bobby");
-
-        List<Role> roleList = accountRoleMapper.getRolesByIdAndType(bobby.getId(), AccountConst.TYPE_EMPLOYEE);
-        System.out.println(roleList);
-    }
 }

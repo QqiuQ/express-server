@@ -3,6 +3,9 @@ package com.team24.express.entity.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 /**
  * @className: EmployeeRoleDto
  * @author: Bobby
@@ -19,6 +22,10 @@ public class EmployeeRoleVo {
     private String email;
     private Integer status;
     private Integer accountStatus;
+    private String avatar;
+    private Integer sex;
+    private String address;
+    private LocalDate hireDate;
 
     private Integer roleId;
     private String roleName;
