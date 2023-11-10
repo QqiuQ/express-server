@@ -20,10 +20,4 @@ public interface UserMapper extends BaseMapper<User> {
     // @Select()写法
     @Select("select * from user where username = #{username}")
     User selectByUsername(@Param("username") String username);
-
-    @Select("select * from user")
-    IPage<User> getAllUsers(Page<User> page);
-
-    IPage<User> queryUsersByPage(@Param("page") Page<User> page, @Param("user") User user);
-
 }

@@ -1,5 +1,7 @@
 package com.team24.express.service;
 
+import com.team24.express.entity.vo.EmployeeRoleVo;
+
 import java.util.List;
 
 /**
@@ -9,4 +11,10 @@ import java.util.List;
  **/
 public interface AccountRoleService {
     List<String> getRoleNamesByIdAndType(Long userId, String accountType);
+
+    List<EmployeeRoleVo> getEmployeeVoListByRoleName(String roleName);
+
+    List<EmployeeRoleVo> getEmployeeVoListByRoleId(Integer id);
+
+    boolean changeRole(Long employeeId, Integer curRoleId, Integer newRoleId);
 }

@@ -2,6 +2,8 @@ package com.team24.express.service;
 
 import com.team24.express.entity.Role;
 
+import java.util.List;
+
 /**
  * @className: RoleService
  * @author: Bobby
@@ -13,4 +15,7 @@ public interface RoleService {
     boolean edit(Role role);
 
     boolean delete(Integer id);
+
+    List<Role> selectEmployeeRoles();
+
 }

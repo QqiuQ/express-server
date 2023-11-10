@@ -3,9 +3,11 @@ package com.team24.express.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.team24.express.entity.Role;
 import com.team24.express.entity.AccountRole;
+import com.team24.express.entity.vo.EmployeeRoleVo;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -24,4 +26,11 @@ public interface AccountRoleMapper extends BaseMapper<AccountRole> {
 
     @Delete("delete form account_role where account_id=#{id} and type=#{type}")
     int deleteByAccountIdAndType(Long id, String type);
+
+    List<EmployeeRoleVo> getEmployeeVoListByRoleName(String roleName);
+
+    List<EmployeeRoleVo> getEmployeeVoListByRoleId(Integer id);
+
+    @Update("update account_role set role_id = #{newRoleId} where account_id=#{employeeId} and role_id = #{curRoleId}")
+    int changeRole(Long employeeId, Integer curRoleId, Integer newRoleId);
 }

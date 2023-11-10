@@ -98,7 +98,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             // 添加角色关联
             Employee insertEmp = this.selectByUsername(employee.getUsername());
             Role userRole = roleMapper.getRoleByRoleName(RoleConst.EMPLOYEE);
-            AccountRole accountRole = new AccountRole(insertEmp.getId(), userRole.getId(), AccountConst.TYPE_USER);
+            AccountRole accountRole = new AccountRole(insertEmp.getId(), userRole.getId(), AccountConst.TYPE_EMPLOYEE);
             return accountRoleMapper.insert(accountRole) > 0;
         }
         return false;
