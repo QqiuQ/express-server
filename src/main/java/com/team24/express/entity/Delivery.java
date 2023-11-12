@@ -51,5 +51,6 @@ public class Delivery {
     public static final Integer EXPRESS_STATUS_COLLECTING = 1;  // 揽件中
     public static final Integer EXPRESS_STATUS_SHIPPING = 2;    // 运输中
     public static final Integer EXPRESS_STATUS_DELIVERING = 3;  // 派送中
-    public static final Integer EXPRESS_STATUS_SIGNED = 4;    // 已签收
+    public static final Integer EXPRESS_STATUS_UNCLAIM = 4;  // 待取件
+    public static final Integer EXPRESS_STATUS_SIGNED = 5;    // 已签收
 }

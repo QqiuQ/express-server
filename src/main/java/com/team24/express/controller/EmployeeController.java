@@ -2,6 +2,7 @@ package com.team24.express.controller;
 
 import com.team24.express.common.Result;
 import com.team24.express.entity.Employee;
+import com.team24.express.entity.vo.EmployeeRoleFullVo;
 import com.team24.express.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -46,14 +47,30 @@ public class EmployeeController {
         return Result.error("查找失败");
     }
 
+//    @Operation(summary = "条件查询员工", description = "根据员工实体部分属性，条件查询，返回员工列表。",
+//            parameters = {
+//                    @Parameter(name = "employee", schema = @Schema(implementation = Employee.class))
+//            },
+//            responses = @ApiResponse(description = "列表封装在Result的data里"))
+//    @PostMapping()
+//    public Result query(@RequestBody Employee employee) {
+//        List<Employee> employeeList = employeeService.selectEmployeeList(employee);
+//        if (Objects.nonNull(employeeList)) {
+//            Result result = Result.success("查找成功");
+//            result.setData(employeeList);
+//            return result;
+//        }
+//        return Result.error("查找失败");
+//    }
+
     @Operation(summary = "条件查询员工", description = "根据员工实体部分属性，条件查询，返回员工列表。",
             parameters = {
-                    @Parameter(name = "employee", schema = @Schema(implementation = Employee.class))
+                    @Parameter(name = "employee", schema = @Schema(implementation = EmployeeRoleFullVo.class))
             },
             responses = @ApiResponse(description = "列表封装在Result的data里"))
     @PostMapping()
-    public Result query(@RequestBody Employee employee) {
-        List<Employee> employeeList = employeeService.selectEmployeeList(employee);
+    public Result query(@RequestBody EmployeeRoleFullVo employee) {
+        List<EmployeeRoleFullVo> employeeList = employeeService.selectEmployeeList(employee);
         if (Objects.nonNull(employeeList)) {
             Result result = Result.success("查找成功");
             result.setData(employeeList);
@@ -64,11 +81,11 @@ public class EmployeeController {
 
     @Operation(summary = "添加员工", description = "根据前端返回的json实体，添加员工",
             parameters = {
-                    @Parameter(name = "employee", schema = @Schema(implementation = Employee.class))
+                    @Parameter(name = "employee", schema = @Schema(implementation = EmployeeRoleFullVo.class))
             },
             responses = @ApiResponse(description = "返回添加结果的消息"))
     @PostMapping("/add")
-    public Result add(@RequestBody Employee employee) {
+    public Result add(@RequestBody EmployeeRoleFullVo employee) {
         if (employeeService.add(employee)) {
             return Result.success("添加成功");
         }

@@ -11,6 +11,7 @@ import java.util.List;
  * @author: Bobby
  * @date: 10/10/2023
  **/
+@Deprecated
 public interface OrderService {
 //    Delivery selectByDeliveryname(String Deliveryname);
 

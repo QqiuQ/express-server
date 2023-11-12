@@ -41,5 +41,16 @@
         </where>
     </select>
 
+    <select id="getAvailableEmployees" resultType="com.team24.express.entity.vo.EmployeeRoleVo">
+        select employee.id as 'employee_id', employee.username, employee.name, employee.code,
+        employee.phone, employee.email, employee.status, employee.account_status, employee.avatar,
+        employee.sex, employee.address, employee.hire_date, role.id as 'role_id', role.name as 'role_name'
+
+        from employee join account_role on employee.id = account_role.account_id join role on
+        account_role.role_id = role.id
+        where account_role.type='EMPLOYEE' and role.name != 'ROLE_SUPER_ADMIN' and role.name != 'ROLE_STATION_ADMIN'
+        and employee.id not in
+        (select employee.id from employee join station_employee on employee.id = station_employee.employee_id)
+    </select>
 
 </mapper>

@@ -2,6 +2,7 @@ package com.team24.express.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.team24.express.entity.Employee;
+import com.team24.express.entity.vo.EmployeeRoleFullVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -34,4 +35,6 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * @return
      */
     List<Employee> selectRoleEmployees(String roleName);
+
+    List<EmployeeRoleFullVo> selectWithRoleList(EmployeeRoleFullVo employee);
 }

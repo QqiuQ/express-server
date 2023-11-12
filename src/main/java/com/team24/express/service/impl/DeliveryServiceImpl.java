@@ -28,6 +28,8 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Boolean add(Delivery delivery) {
         delivery.setCreateTime(LocalDateTime.now());
         delivery.setExpressNumber(String.valueOf(idGenerator.nextId()));
+        delivery.setExpressStatus(Delivery.EXPRESS_STATUS_COLLECTING);
+        delivery.setStatus(Delivery.STATUS_PROGRESS);
         if (deliveryMapper.insert(delivery) > 0) return true;
         return false;
     }
@@ -126,5 +128,10 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public Delivery getById(Long id) {
         return deliveryMapper.selectById(id);
+    }
+
+    @Override
+    public boolean edit(Delivery delivery) {
+        return deliveryMapper.updateById(delivery) > 0;
     }
 }

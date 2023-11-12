@@ -2,13 +2,16 @@ package com.team24.express.controller;
 
 import com.team24.express.common.Result;
 import com.team24.express.entity.Delivery;
+import com.team24.express.service.CourierService;
 import com.team24.express.service.DeliveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +28,35 @@ import java.util.Objects;
 public class DeliveryController {
     @Resource
     DeliveryService deliveryService;
+
+
+    @Autowired
+    CourierService courierService;
+
+    /**
+     * 确认妥投
+     *
+     * @param id
+     * @return
+     */
+    @PostMapping("/place")
+    public Result ackDelivered(@RequestParam("id") Long id) {
+        courierService.ackDelivered(id);
+        return Result.success("操作成功！");
+    }
+
+    /**
+     * 揽件确认
+     *
+     * @param id
+     * @return
+     */
+
+    @PostMapping("/collect")
+    public Result ackCollected(@RequestParam("id") Long id) {
+        courierService.ackCollected(id);
+        return Result.success("操作成功！");
+    }
 
     @Operation(summary = "添加物流", description = "根据前端返回实体添加",
             parameters = {
@@ -137,6 +169,14 @@ public class DeliveryController {
         return Result.error("确认失败");
     }
 
+    @Operation(summary = "获取订单", description = "根据订单Id获取订单",
+            parameters = {
+                    @Parameter(name = "id", schema = @Schema(implementation = Long.class)),
+            },
+            responses = {
+                    @ApiResponse(description = "返回消息和订单"),
+            }
+    )
     @GetMapping()
     public Result getDelivery(@RequestParam("id") Long id) {
         Delivery delivery = deliveryService.getById(id);
@@ -147,4 +187,42 @@ public class DeliveryController {
         }
         return Result.error("运单不存在");
     }
+
+    @Operation(summary = "条件查询获取订单列表", description = "根据实体对象条件查询订单",
+            parameters = {
+                    @Parameter(name = "delivery", schema = @Schema(implementation = Delivery.class)),
+            },
+            responses = {
+                    @ApiResponse(description = "返回消息和订单列表", content = @Content(schema = @Schema(implementation = Delivery.class))),
+            }
+    )
+    @PostMapping()
+    public Result getDeliveryList(@RequestBody Delivery delivery) {
+        List<Delivery> deliveryList = deliveryService.selectDeliveryList(delivery);
+        if (Objects.nonNull(deliveryList)) {
+            Result result = Result.success("查找成功");
+            result.setData(deliveryList);
+            return result;
+        }
+        return Result.error("运单不存在");
+    }
+
+    @Operation(summary = "条件查询获取订单列表", description = "根据实体对象条件查询订单",
+            parameters = {
+                    @Parameter(name = "delivery", schema = @Schema(implementation = Delivery.class)),
+            },
+            responses = {
+                    @ApiResponse(description = "返回消息和订单列表", content = @Content(schema = @Schema(implementation = Delivery.class))),
+            }
+    )
+    @PostMapping("/edit")
+    public Result edit(@RequestBody Delivery delivery) {
+        if (deliveryService.edit(delivery)) {
+            return Result.success("修改成功");
+        }
+
+        return Result.error("修改失败");
+    }
+
+
 }

@@ -2,7 +2,10 @@ package com.team24.express.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.team24.express.entity.*;
+import com.team24.express.entity.Delivery;
+import com.team24.express.entity.Station;
+import com.team24.express.entity.StationDelivery;
+import com.team24.express.entity.StationEmployee;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -13,7 +16,7 @@ import java.util.List;
 public interface StationMapper extends BaseMapper<Station> {
     // zgd code
     @Select("select * from station")
-    List<Station> selectList();
+    List<Station> selectAllList();
 
 
     // jjw code

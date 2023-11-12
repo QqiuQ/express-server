@@ -21,11 +21,16 @@ public class StationDelivery {
     private Long id;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
 
-    private Long orderId;
+    private Long deliveryId;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
 
     private Long stationId;
     private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+
+    public static final Integer STATUS_UNSHIPPING = 0;
+    public static final Integer STATUS_UNSTOCK = 1;
+    public static final Integer STATUS_UNCLAIMED = 2;
+
 }

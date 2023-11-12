@@ -53,6 +53,7 @@ public interface DeliveryService {
 
     /**
      * 根据订单ID删除
+     *
      * @param id
      * @return
      */
@@ -60,6 +61,7 @@ public interface DeliveryService {
 
     /**
      * 更新订单状态
+     *
      * @param id
      * @param status
      * @return
@@ -68,6 +70,7 @@ public interface DeliveryService {
 
     /**
      * 更新物流状态
+     *
      * @param id
      * @param status
      * @return
@@ -76,8 +79,11 @@ public interface DeliveryService {
 
     /**
      * 根据ID返回物流实体
+     *
      * @param id
      * @return
      */
     Delivery getById(Long id);
+
+    boolean edit(Delivery delivery);
 }

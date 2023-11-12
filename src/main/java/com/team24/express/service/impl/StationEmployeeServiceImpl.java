@@ -61,4 +61,9 @@ public class StationEmployeeServiceImpl implements StationEmployeeService {
         return stationEmployeeMapper.selectList(wrapper);
     }
 
+    @Override
+    public List<Employee> getAvailableEmployees() {
+        return stationEmployeeMapper.getAvailableEmployees();
+    }
+
 }

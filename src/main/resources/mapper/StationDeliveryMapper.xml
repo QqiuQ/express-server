@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
+<mapper namespace="com.team24.express.mapper.StationDeliveryMapper">
+
+    <select id="getDeliverysByStationId" resultType="com.team24.express.entity.vo.StationDeliveryVo">
+        select delivery.express_number,
+        delivery.sender_name,delivery.sender_phone,delivery.sender_address,delivery.recipient_name,
+        delivery.recipient_phone,delivery.recipient_address,
+        station_delivery.* from station_delivery
+        join delivery on station_delivery.delivery_id = delivery.id
+        <where>
+            <if test="stationId != null">
+                station_delivery.station_id = #{stationId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

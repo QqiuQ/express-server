@@ -9,10 +9,13 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
+@Deprecated
 public class OrderServiceImpl implements OrderService {
     @Resource
     private OrderMapper orderMapper;
+
     @Override
     public int update(Delivery delivery) {
         return orderMapper.updateById(delivery);

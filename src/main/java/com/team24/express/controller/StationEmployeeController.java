@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -181,4 +182,21 @@ public class StationEmployeeController {
         }
         return Result.error("查找失败");
     }
+
+    @Operation(summary = "获取可用的员工列表", description = "获取还没加入站点员工关系表的员工",
+            responses = @ApiResponse(
+                    description = "返回员工列表",
+                    content = @Content(schema = @Schema(implementation = Employee.class)))
+    )
+    @GetMapping("/employees/available")
+    public Result getEmployeesAvailable() {
+        List<Employee> employeeList = stationEmployeeService.getAvailableEmployees();
+        if (Objects.nonNull(employeeList)) {
+            Result result = Result.success("查找成功");
+            result.setData(employeeList);
+            return result;
+        }
+        return Result.error("查找失败");
+    }
+
 }

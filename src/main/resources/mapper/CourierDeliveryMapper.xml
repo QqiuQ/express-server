@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
+<mapper namespace="com.team24.express.mapper.CourierDeliveryMapper">
+    <!--    查询该快递员的 待揽收 任务-->
+    <select id="getCollectingByCourierId" resultType="com.team24.express.entity.Delivery">
+        select delivery.* from delivery join courier_delivery on delivery.id = courier_delivery.delivery_id
+        <where>
+            courier_delivery.status = 0
+            <if test="courierId!=null and courierId!=''">
+                and courier_delivery.courier_id = #{courierId}
+            </if>
+        </where>
+    </select>
+
+    <!--    查询该快递员的 待揽收 任务-->
+    <select id="getCollectingBy" resultType="com.team24.express.entity.Delivery">
+        select delivery.* from delivery join courier_delivery on delivery.id = courier_delivery.delivery_id
+        <where>
+            <if test="status!=null">
+                courier_delivery.status = #{status}
+            </if>
+            <if test="courierId!=null and courierId!=''">
+                and courier_delivery.courier_id = #{courierId}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

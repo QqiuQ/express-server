@@ -2,7 +2,10 @@ package com.team24.express.controller;
 
 
 import com.team24.express.common.Result;
-import com.team24.express.entity.*;
+import com.team24.express.entity.Employee;
+import com.team24.express.entity.Station;
+import com.team24.express.entity.StationDelivery;
+import com.team24.express.entity.StationEmployee;
 import com.team24.express.service.EmployeeService;
 import com.team24.express.service.StaitonService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,24 +41,24 @@ public class StationController {
      * @param delivery
      * @return
      */
-    @Operation(summary = "条件查询快递", description = "根据返回的实体进行条件查询",
-            parameters = {
-                    @Parameter(name = "delivery", schema = @Schema(implementation = Delivery.class)),
-            },
-            responses = @ApiResponse(description = "返回消息和快递列表",
-                    content = @Content(schema = @Schema(implementation = Delivery.class)))
-    )
-    @PostMapping("/delivery")
-    public Result selectPackages(@RequestBody Delivery delivery) {
-        List<Delivery> orderList = stationService.selectPackages(delivery);
-        if (orderList.isEmpty())
-            return Result.error("未查询到数据！");
-        else {
-            Result r = Result.success("查询成功！");
-            r.setData(orderList);
-            return r;
-        }
-    }
+//    @Operation(summary = "条件查询快递", description = "根据返回的实体进行条件查询",
+//            parameters = {
+//                    @Parameter(name = "delivery", schema = @Schema(implementation = Delivery.class)),
+//            },
+//            responses = @ApiResponse(description = "返回消息和快递列表",
+//                    content = @Content(schema = @Schema(implementation = Delivery.class)))
+//    )
+//    @PostMapping("/delivery")
+//    public Result selectPackages(@RequestBody Delivery delivery) {
+//        List<Delivery> orderList = stationService.selectPackages(delivery);
+//        if (orderList.isEmpty())
+//            return Result.error("未查询到数据！");
+//        else {
+//            Result r = Result.success("查询成功！");
+//            r.setData(orderList);
+//            return r;
+//        }
+//    }
 
 
     /**
@@ -66,7 +69,7 @@ public class StationController {
      */
     @Operation(summary = "快递入库", description = "在站点快递表中新增关系",
             parameters = {
-                    @Parameter(name = "stationOrder", schema = @Schema(implementation = StationDelivery.class)),
+                    @Parameter(name = "stationDelivery", schema = @Schema(implementation = StationDelivery.class)),
             },
             responses = @ApiResponse(description = "返回消息"
             )
@@ -85,7 +88,7 @@ public class StationController {
      */
     @Operation(summary = "快递出库", description = "从站点快递表删除关系",
             parameters = {
-                    @Parameter(name = "stationOrder", schema = @Schema(implementation = StationDelivery.class)),
+                    @Parameter(name = "stationDelivery", schema = @Schema(implementation = StationDelivery.class)),
             },
             responses = @ApiResponse(description = "返回消息"
             )
@@ -111,6 +114,7 @@ public class StationController {
             responses = @ApiResponse(description = "返回消息"
             )
     )
+    @Deprecated
     @PostMapping("/courier/add")
     public Result addNewCourier(@RequestParam Long employeeId, @RequestParam Long stationId) {
         Employee courier = employeeService.selectById(employeeId);
@@ -128,7 +132,7 @@ public class StationController {
         }
     }
 
-    @Operation(summary = "添加员工", description = "网点关系表内添加网点与员工关系",
+    @Operation(summary = "添加网点员工", description = "网点关系表内添加网点与员工关系",
             parameters = {
                     @Parameter(name = "employeeId", schema = @Schema(implementation = Long.class)),
                     @Parameter(name = "stationId", schema = @Schema(implementation = Long.class)),
@@ -138,21 +142,23 @@ public class StationController {
     )
     @PostMapping("/employee/add")
     public Result addEmployee(@RequestParam Long employeeId, @RequestParam Long stationId) {
-        Employee courier = employeeService.selectById(employeeId);
-        if (Objects.isNull(courier))
+        Employee employee = employeeService.selectById(employeeId);
+        if (Objects.isNull(employee))
             return Result.error("不存在该员工");
         else {
             StationEmployee e = new StationEmployee();
             e.setStationId(stationId);
             e.setCreateTime(LocalDateTime.now());
             e.setUpdateTime(LocalDateTime.now());
-            e.setEmployeeId(courier.getId());
+            e.setEmployeeId(employee.getId());
+
             e.setPosition("网点员工");
             stationService.addNewCourier(e);
 
             return Result.success("录入成功");
         }
     }
+
 
     /**
      * 根据员工实体查询本网点的快递员（通过匹配快递员的状态或id来查询）
@@ -274,6 +280,26 @@ public class StationController {
             Result result = Result.error("删除失败");
             return result;
         }
+    }
 
+    @Operation(summary = "查询附近网点", description = "根据地址查询网点",
+            parameters = {
+                    @Parameter(name = "address", description = "省/市/县/详细地址", schema = @Schema(implementation = String.class)),
+            },
+            responses = {
+                    @ApiResponse(description = "返回查询消息和站点列表",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(anyOf = {Result.class, Station.class}))),
+            }
+    )
+    @PostMapping("/near")
+    public Result near(@RequestParam("address") String address) {
+        List<Station> stationList = stationService.queryByAddress(address);
+        if (Objects.nonNull(stationList)) {
+            Result result = Result.success("查找成功");
+            result.setData(stationList);
+            return result;
+        }
+        return Result.error("查找失败");
     }
 }

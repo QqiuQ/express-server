@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.team24.express.common.AccountConst;
 import com.team24.express.common.RoleConst;
 import com.team24.express.entity.*;
+import com.team24.express.entity.vo.EmployeeRoleFullVo;
 import com.team24.express.mapper.AccountRoleMapper;
 import com.team24.express.mapper.EmployeeMapper;
 import com.team24.express.mapper.RoleMapper;
@@ -91,18 +92,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<EmployeeRoleFullVo> selectEmployeeList(EmployeeRoleFullVo employee) {
+        return employeeMapper.selectWithRoleList(employee);
+    }
+
+    @Override
     public Boolean add(Employee employee) {
-//        employee.setCreateTime(LocalDateTime.now());
-//        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
-//        if (employeeMapper.insert(employee) > 0) {
-//            // 添加角色关联
-//            Employee insertEmp = this.selectByUsername(employee.getUsername());
-//            Role userRole = roleMapper.getRoleByRoleName(RoleConst.EMPLOYEE);
-//            AccountRole accountRole = new AccountRole(insertEmp.getId(), userRole.getId(), AccountConst.TYPE_EMPLOYEE);
-//            return accountRoleMapper.insert(accountRole) > 0;
-//        }
-//        return false;
         return addSpecifyRoleEmployee(employee, RoleConst.EMPLOYEE);
+    }
+    @Override
+    public Boolean add(EmployeeRoleFullVo employee) {
+        return addSpecifyRoleEmployee(employee, employee.getRoleName());
     }
 
     @Override

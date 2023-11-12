@@ -6,6 +6,7 @@ import com.team24.express.entity.Delivery;
 import com.team24.express.entity.Order;
 import com.team24.express.entity.Station;
 import com.team24.express.entity.User;
+import com.team24.express.service.DeliveryService;
 import com.team24.express.service.OrderService;
 import com.team24.express.service.StationService;
 import com.team24.express.service.UserService;
@@ -27,11 +28,14 @@ import java.util.Objects;
 @Tag(name = "OrderController", description = "运单相关接口")
 @Slf4j
 @RestController
+@Deprecated
 @RequestMapping("/order")
 public class OrderController {
 
     @Resource
     OrderService orderService;
+
+
     @PostMapping()
     public Result list() {
 
@@ -40,7 +44,8 @@ public class OrderController {
         result.setData(orderList);
         return result;
     }
-//    @PostMapping("/add")
+
+    //    @PostMapping("/add")
 //    public Result add(@RequestBody Station station) {
 //        stationService.insert(station);
 //        Result result = Result.success("查询成功");

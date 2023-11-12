@@ -1,6 +1,7 @@
 package com.team24.express.service;
 
 import com.team24.express.entity.Employee;
+import com.team24.express.entity.vo.EmployeeRoleFullVo;
 
 import java.util.List;
 
@@ -17,12 +18,17 @@ public interface EmployeeService {
 
     List<Employee> selectEmployeeList(Employee employee);
 
+    List<EmployeeRoleFullVo> selectEmployeeList(EmployeeRoleFullVo employee);
+
+
     /**
      * 包含密码加密和添加普通员工角色关联
      *
      * @param employee
      * @return
      */
+    Boolean add(EmployeeRoleFullVo employee);
+
     Boolean add(Employee employee);
 
     Boolean edit(Employee employee);

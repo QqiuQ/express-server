@@ -72,4 +72,6 @@ public interface StaitonService {
     Station selectByStationname(String username);
 
     List<Station> getStationList();
+
+    List<Station> queryByAddress(String address);
 }

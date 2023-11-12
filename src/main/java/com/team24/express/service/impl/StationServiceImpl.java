@@ -2,7 +2,10 @@ package com.team24.express.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.team24.express.entity.*;
+import com.team24.express.entity.Delivery;
+import com.team24.express.entity.Station;
+import com.team24.express.entity.StationDelivery;
+import com.team24.express.entity.StationEmployee;
 import com.team24.express.mapper.StationMapper;
 import com.team24.express.service.StaitonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,7 @@ public class StationServiceImpl implements StaitonService {
     public void packageInRep(StationDelivery stationDelivery) {
         stationDelivery.setCreateTime(LocalDateTime.now());
         stationDelivery.setUpdateTime(LocalDateTime.now());
+        stationDelivery.setStatus(StationDelivery.STATUS_UNCLAIMED);
         stationMapper.addNewPackage(stationDelivery);
     }
 
@@ -67,6 +71,27 @@ public class StationServiceImpl implements StaitonService {
     }
 
     @Override
+    public List<Station> queryByAddress(String address) {
+        String[] parts = address.split("/");
+        if (parts.length > 2) {
+            String province = parts[0];
+            String city = parts[1];
+            String country = parts[2];
+            String street = "";
+            if (parts.length > 3) {
+                street = parts[3];
+            }
+            QueryWrapper<Station> wrapper = new QueryWrapper<>();
+            wrapper.eq("province", province);
+            wrapper.eq("city", city);
+            wrapper.eq("country", country);
+            wrapper.like("street", street);
+            return stationMapper.selectList(wrapper);
+        }
+        return null;
+    }
+
+    @Override
     public boolean deleteById(Long id) {
         return stationMapper.deleteById(id) > 0;
     }
@@ -88,7 +113,7 @@ public class StationServiceImpl implements StaitonService {
 
     @Override
     public List<Station> queryList() {
-        return stationMapper.selectList();
+        return stationMapper.selectAllList();
     }
 
 }
